@@ -13,16 +13,17 @@ function shiftLetter(letter, shift) {
 }
 
 export function clean(input) {
-  let out = ""
-  // "Tante Ütö" => TANTEUETOE
-  return out
+  return input
+    .toUpperCase()
+    .replace(/Ö/g, "OE")
 }
 
 export function caesar(input, shift) {
+  const cleaned = clean(input);
   let out = ""
 
-  for (let i = 0; i < input.length; i++) {
-    const code = input.charCodeAt(i)
+  for (let i = 0; i < cleaned.length; i++) {
+    const code = cleaned.charCodeAt(i)
     out += shiftLetter(code, shift)
   }
 
