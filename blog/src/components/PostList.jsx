@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
-import Post from './Post'
-export default class PostList extends Component {
-  state = {
-    posts: [
-      {
-        id: 1,
-        title: 'Hello, World!',
-        body: 'Heute ist ein guter Tag.',
-      },
-      {
-        id: 2,
-        title: 'Hallo, Gestern!',
-        body: 'Gestern war auch ein guter Tag!',
-      },
-    ],
-  };
+import axios from 'axios';
 
-  componentDidMount() {}
+import Post from './Post'
+
+export default class PostList extends Component {
+  state = { posts: [] };
+
+  async componentDidMount() {
+    const result = await axios.get('https://jsonplaceholder.typicode.com/posts');
+
+    this.setState({posts: result.data});
+  }
 
   renderPosts() {
     return (
@@ -27,6 +21,10 @@ export default class PostList extends Component {
   }
 
   render() {
+    if (this.state.posts.length === 0) {
+      return <div>Keine Blogeinträge vorhanden.</div>
+    }
+
     return (
       <ol>
         {this.renderPosts()}
