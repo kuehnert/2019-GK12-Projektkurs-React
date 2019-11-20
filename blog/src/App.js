@@ -1,5 +1,7 @@
 import React from 'react';
 import PostList from './components/PostList'
+import PostPage from './components/PostPage'
+import { BrowserRouter, Route } from 'react-router-dom';
 
 function App() {
   return (
@@ -8,7 +10,10 @@ function App() {
         <h1>Mein cooles Blog</h1>
       </header>
 
-      <PostList />
+      <BrowserRouter >
+        <Route path="/" exact component={PostList} />
+        <Route path="/posts/:id" component={PostPage} />
+      </BrowserRouter>
     </div>
   );
 }
