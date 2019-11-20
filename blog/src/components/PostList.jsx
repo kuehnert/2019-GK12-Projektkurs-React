@@ -4,12 +4,22 @@ import axios from 'axios';
 import Post from './Post'
 
 export default class PostList extends Component {
-  state = { posts: [] };
+  constructor(props) {
+    super(props);
+    console.log("Constructor");
+
+    this.state = { posts: null };
+  }
 
   async componentDidMount() {
-    const result = await axios.get('https://jsonplaceholder.typicode.com/posts');
+    console.log("componentDidMount");
+    console.log(this.state);
 
-    this.setState({posts: result.data});
+    if (this.state.posts === null) {
+      const result = await axios.get('https://jsonplaceholder.typicode.com/posts');
+
+      this.setState({posts: result.data});
+    }
   }
 
   renderPosts() {
@@ -21,14 +31,14 @@ export default class PostList extends Component {
   }
 
   render() {
-    if (this.state.posts.length === 0) {
+    if (this.state.posts === null) {
       return <div>Keine Blogeinträge vorhanden.</div>
     }
 
     return (
-      <ol>
+      <div className="ui cards">
         {this.renderPosts()}
-      </ol>
+      </div>
     );
   }
 }

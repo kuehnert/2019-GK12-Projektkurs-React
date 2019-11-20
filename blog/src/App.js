@@ -5,7 +5,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
+    <div className="ui container">
       <header className="App-header">
         <h1>Mein cooles Blog</h1>
       </header>
