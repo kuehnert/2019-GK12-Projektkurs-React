@@ -1,4 +1,4 @@
-import jsonPlaceholder from '../apis/jsonPlaceholder';
+// import jsonPlaceholder from '../apis/jsonPlaceholder';
 
 export const getTodos = () => async dispatch => {
   const response = [
@@ -14,6 +14,13 @@ export const getTodos = () => async dispatch => {
     type: 'GET_TODOS',
     payload: response
   });
+}
+
+export const getTodo = (id) => async dispatch => {
+  dispatch({
+    type: 'GET_TODO',
+    payload: id
+  })
 }
 
 export const createTodo = (todo) => {

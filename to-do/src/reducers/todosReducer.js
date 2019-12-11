@@ -1,5 +1,5 @@
 const initialState = {
-  todos: null,
+  list: null,
   todo: null,
   position: 0,
   todosperpage: 20,
@@ -8,9 +8,11 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'GET_TODOS':
-      return action.payload;
+      return {...state, list: action.payload};
     case 'GET_TODO':
-      return action.payload;
+      const id = parseInt(action.payload);
+      const todo = state.list.find(t => t.id === id);
+      return { ...state, todo: todo};
 
     default:
       return state;
