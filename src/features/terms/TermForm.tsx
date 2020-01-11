@@ -4,8 +4,14 @@ import { Formik, Form, Field } from 'formik';
 import FDatePicker from '../../components/FDatePicker';
 import FTextField from '../../components/FTextField';
 import history from '../../history';
+import { TermBase } from './termSlice';
 
-const TermForm = (props: any) => (
+interface Props {
+  initialValues: TermBase;
+  handleSubmit: (values: TermBase) => void;
+}
+
+const TermForm = (props: Props) => (
   <Formik initialValues={props.initialValues} onSubmit={props.handleSubmit}>
     {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
       <Form>

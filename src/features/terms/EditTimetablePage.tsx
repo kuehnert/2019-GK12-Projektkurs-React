@@ -41,7 +41,7 @@ export default (props: RouteComponentProps<MatchParams>) => {
   useEffect(() => {
     dispatch(getTerm(termId));
     dispatch(getCourses(termId));
-  }, []);
+  }, [dispatch, termId]);
 
   return (
     <DndProvider backend={Backend}>

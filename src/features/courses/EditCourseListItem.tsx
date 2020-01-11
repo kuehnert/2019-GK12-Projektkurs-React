@@ -25,7 +25,13 @@ const EditCourseListItem: React.FC<Props> = ({ course, handleEditCourse }: Props
         console.log(item);
         console.log(course);
         console.log(dropResult);
+        console.log(course.lessons);
         // TODO: Create lesson (and delete old one if necessary)
+        // course.lessons.push({
+        //   courseId: course.id,
+        //   weekday: 1,
+        //   period: 1,
+        // });
       }
     },
     collect: (monitor: any) => ({

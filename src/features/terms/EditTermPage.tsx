@@ -2,7 +2,7 @@ import { Typography } from '@material-ui/core';
 import React, { Component } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { getTerm, updateTerm } from './termSlice';
-import { Term } from './termSlice';
+import { Term, TermBase } from './termSlice';
 import history from '../../history';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
@@ -15,9 +15,9 @@ class EditTermPage extends Component<Props> {
     this.props.getTerm(termId);
   }
 
-  handleSubmit = async (values: Term) => {
+  handleSubmit = async (values: TermBase) => {
     try {
-      await this.props.updateTerm(values);
+      await this.props.updateTerm(values as Term);
       history.push(`/terms`);
     } catch (error) {
       console.error(error);
@@ -36,7 +36,7 @@ class EditTermPage extends Component<Props> {
         <Typography variant="h2">Halbjahr bearbeiten: {term.name}</Typography>
 
         <TermForm
-          handleSubmit={(values: Term) => this.handleSubmit(values)}
+          handleSubmit={(values: TermBase) => this.handleSubmit(values)}
           initialValues={term}
         />
       </div>

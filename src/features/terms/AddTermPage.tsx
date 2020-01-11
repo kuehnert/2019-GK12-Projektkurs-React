@@ -1,38 +1,34 @@
 import { Typography } from '@material-ui/core';
-import React, { Component } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { createTerm } from './termSlice';
-import { Term } from './termSlice';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import history from '../../history';
 import TermForm from './TermForm';
+import { createTerm, TermBase, defaultTerm } from './termSlice';
 
-interface OwnProps {
+interface Props {
   termId: string;
 }
 
-class AddTermPage extends Component<Props> {
-  handleSubmit = async (values: Term) => {
+// const AddTermPage: React.FC = (props: Props) => {
+const AddTermPage = (props: Props) => {
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (values: TermBase) => {
     try {
-      await this.props.createTerm(values);
+      dispatch(createTerm(values));
       history.push(`/terms`);
     } catch (error) {
       console.error(error);
     }
   };
 
-  render() {
-    return (
-      <div>
-        <Typography variant="h2">Neues Halbjahr anlegen</Typography>
+  return (
+    <div>
+      <Typography variant="h2">Neues Halbjahr anlegen</Typography>
 
-        <TermForm onSubmit={(values: Term) => this.handleSubmit(values)} />
-      </div>
-    );
-  }
-}
+      <TermForm handleSubmit={(values: TermBase) => handleSubmit(values)} initialValues={Object.assign(defaultTerm)} />
+    </div>
+  );
+};
 
-const mapDispatchToProps = { createTerm };
-
-const connector = connect(null, mapDispatchToProps);
-type Props = ConnectedProps<typeof connector> & OwnProps;
-export default connector(AddTermPage);
+export default AddTermPage;

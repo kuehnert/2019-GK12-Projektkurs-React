@@ -9,11 +9,11 @@ export interface Enrolment {
 }
 
 export interface Lesson {
-  id: string;
+  // id: string;
   courseId: string;
   weekday: number;
   period: number;
-  room: string;
+  room?: string;
 }
 
 export interface Course extends CourseBase {
@@ -106,7 +106,7 @@ export const {
   updateCourseFailed,
   updateCourseSuccess,
   deleteCourseFailed,
-  deleteCourseSuccess
+  deleteCourseSuccess,
 } = courseSlice.actions;
 
 export default courseSlice.reducer;

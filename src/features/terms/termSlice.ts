@@ -5,14 +5,24 @@ import authHeader from '../../utils/authHeader';
 import getTeacherId from '../../utils/getTeacherId';
 import { Teacher } from '../teachers/teacherSlice';
 
-export interface Term {
+export interface Term extends TermBase {
   id: string;
-  name: string;
-  start: Date;
-  end: Date;
   teacher: Teacher;
+}
+
+export interface TermBase {
+  name: string;
+  start?: Date;
+  end?: Date;
   periods: Period[];
 }
+
+export const defaultTerm: TermBase = {
+  name: '',
+  periods: [],
+  start: new Date(),
+  end: new Date(),
+};
 
 export interface TermState {
   terms: Term[];
@@ -125,7 +135,7 @@ export const getTerm = (termId: string): AppThunk => async dispatch => {
   dispatch(getTermSuccess(term));
 };
 
-export const createTerm = (values: Term): AppThunk => async dispatch => {
+export const createTerm = (values: TermBase): AppThunk => async dispatch => {
   let term;
   try {
     const teacherId = getTeacherId();
