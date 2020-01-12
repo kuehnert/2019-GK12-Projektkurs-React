@@ -32,7 +32,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy:staging": "rsync --archive --partial --compress --delete ./build/ deploy@marienschule.com:/home/deploy/sites/sokrates-staging --itemize-changes",
+    "deploy:staging:v": "rsync --verbose --human-readable --archive --partial --progress --compress --delete ./build/ deploy@marienschule.com:/home/deploy/sites/sokrates-staging --itemize-changes --dry-run"
   },
   "eslintConfig": {
     "extends": "react-app"
