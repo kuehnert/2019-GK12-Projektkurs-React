@@ -37,14 +37,11 @@ const CourseList = (props: Props) => {
   };
 
   return (
-    <div
-    // className={classes.root}
-    // classes={{ paper: classes.paper }}
-    >
+    <div className={classes.root}>
       <Typography variant="h4">Kurse</Typography>
       <Divider />
 
-      <List>{renderCourses()}</List>
+      <List component="nav">{renderCourses()}</List>
 
       <Divider />
 
@@ -67,6 +64,9 @@ const CourseList = (props: Props) => {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
+      width: '100%',
+      maxWidth: 360,
+      backgroundColor: theme.palette.background.paper,
       // width: '95%',
       // marginTop: theme.spacing(3),
       // overflowX: 'auto',

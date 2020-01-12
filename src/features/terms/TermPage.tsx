@@ -1,52 +1,51 @@
-import { Fab, Theme, Typography } from '@material-ui/core';
-import { Edit as EditIcon } from '@material-ui/icons';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import React, { Component } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
-import { getTerm } from './termSlice';
-import { Term } from './termSlice';
+import { Fab, Theme, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Edit as EditIcon } from '@material-ui/icons';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
-import { formatDate } from '../../utils/formatter';
 import Loading from '../../components/Loading';
-import Timetable from './Timetable';
 import history from '../../history';
+import { formatDate } from '../../utils/formatter';
+import { getTerm, Term } from './termSlice';
+import Timetable from './Timetable';
 
-export class TermPage extends Component<Props> {
-  componentDidMount() {
-    const { termId } = this.props.match.params;
-    this.props.getTerm(termId);
-  }
-
-  render() {
-    const { term } = this.props;
-
-    if (term == null) {
-      return <Loading />;
-    }
-
-    return (
-      <div>
-        <Typography variant="h3">{term.name}</Typography>
-        <Typography variant="h4">
-          {formatDate(term.start)}-{formatDate(term.end)}
-        </Typography>
-        <Fab onClick={() => history.push(`/terms/${term.id}/edit_timetable`)}>
-          <EditIcon />
-        </Fab>
-        <Timetable term={term} />
-      </div>
-    );
-  }
+interface MatchParams {
+  termId: string;
 }
 
-const mapStateToProps = (state: RootState, props: MatchProps) => ({
-  term: state.terms.terms?.find((term: Term) => term.id === props.match.params.termId),
-});
+const TermPage = (props: RouteComponentProps<MatchParams>) => {
+  const { termId } = props.match.params;
+  const dispatch = useDispatch();
+  const classes = useStyles();
+  const term = useSelector((state: RootState) =>
+    state.terms.terms?.find((term: Term) => term.id === props.match.params.termId)
+  );
 
-const mapDispatchToProps = { getTerm };
+  useEffect(() => {
+    dispatch(getTerm(termId));
+  }, [dispatch, termId]);
 
-const styles = (theme: Theme) =>
+  if (term == null) {
+    return <Loading />;
+  }
+
+  return (
+    <div>
+      <Typography variant="h3">{term.name}</Typography>
+      <Typography variant="h4">
+        {formatDate(term.start)}-{formatDate(term.end)}
+      </Typography>
+      <Fab className={classes.fab} onClick={() => history.push(`/terms/${term.id}/edit_timetable`)}>
+        <EditIcon />
+      </Fab>
+      <Timetable term={term} />
+    </div>
+  );
+};
+
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: '95%',
@@ -63,12 +62,12 @@ const styles = (theme: Theme) =>
         backgroundColor: theme.palette.primary.light,
       },
     },
-  });
+    fab: {
+      position: 'absolute',
+      bottom: theme.spacing(3),
+      right: theme.spacing(3),
+    },
+  })
+);
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
-interface MatchParams {
-  termId: string;
-}
-interface MatchProps extends RouteComponentProps<MatchParams> {}
-type Props = ConnectedProps<typeof connector> & MatchProps & WithStyles<typeof styles>;
-export default connector(withStyles(styles)(TermPage));
+export default TermPage;

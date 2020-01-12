@@ -48,7 +48,7 @@ const CourseItem: React.FC<Props> = ({ course, termId, handleEditCourse }: Props
   });
 
   return (
-    <ListItem ref={drag} style={{ opacity }}>
+    <ListItem button ref={drag} style={{ opacity }}>
       {/* <ListItemIcon>
         <BookIcon />
       </ListItemIcon> */}

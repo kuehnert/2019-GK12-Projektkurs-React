@@ -36,11 +36,14 @@ const useStyles = makeStyles(({ palette }: Theme) =>
       color: 'black',
       cursor: 'pointer',
       border: '1px solid rgba(100, 100, 100, 1)',
+      textAlign: 'center',
+      width: '10%',
     },
     lessonBlank: {
       // background: palette.text.disabled,
       border: '1px solid rgba(100, 100, 100, 1)',
       textAlign: 'center',
+      width: '15%',
     },
   })
 );
@@ -72,7 +75,9 @@ const LessonCell: React.FC<Props> = ({ lesson, weekday, period, termId }: Props)
       if (item?.movingLesson && dropResult.type === 'TrashCan') {
         dispatch(deleteLesson(termId, item.movingLesson));
       } else if (item && dropResult) {
-        dispatch(updateLesson(termId, item.movingLesson, { weekday: dropResult.weekday, periodNo: dropResult.period.number } ));
+        dispatch(
+          updateLesson(termId, item.movingLesson, { weekday: dropResult.weekday, periodNo: dropResult.period.number })
+        );
       }
     },
     collect: (monitor: any) => ({
@@ -92,7 +97,7 @@ const LessonCell: React.FC<Props> = ({ lesson, weekday, period, termId }: Props)
     return (
       <TableCell ref={drop} style={{ backgroundColor }} className={classes.lesson}>
         <div ref={drag} style={{ opacity }}>
-          <Typography variant="body1">{course?.name}</Typography>
+          <Typography variant="body2">{course?.name}</Typography>
           <Typography variant="caption">{lesson.room}</Typography>
         </div>
       </TableCell>

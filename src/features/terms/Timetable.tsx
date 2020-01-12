@@ -26,8 +26,12 @@ const Timetable = ({ term }: Props) => {
 
   const timetable: { [key: string]: Lesson } = {};
 
+  let maxWeekday = 5;
   term?.lessons.forEach(l => {
     timetable[`${l.weekday},${l.periodNo}`] = l;
+    if (l.weekday > maxWeekday) {
+      maxWeekday = l.weekday;
+    }
   });
 
   const renderPeriods = () => {
@@ -37,7 +41,7 @@ const Timetable = ({ term }: Props) => {
           <Typography variant="h6">{period.name}</Typography>
           <Time time={period.start} />-<Time time={period.end} />
         </TableCell>
-        {[0, 1, 2, 3, 4, 5].map(weekday => {
+        {Array.from(Array(maxWeekday).keys()).map(weekday => {
           const lesson = timetable[`${weekday},${period.number}`];
 
           if (lesson != null) {
@@ -50,7 +54,7 @@ const Timetable = ({ term }: Props) => {
                 className={classes.lesson}
                 align="center"
                 onClick={() => history.push(`/terms/${term?.id}/courses/${lesson.courseId}`)}>
-                <Typography variant="body1">{course?.name}</Typography>
+                <Typography variant="body2">{course?.name}</Typography>
                 <Typography variant="caption">{lesson.room}</Typography>
               </TableCell>
             );
@@ -79,7 +83,7 @@ const Timetable = ({ term }: Props) => {
             <TableCell className={classes.period}>Mittwoch</TableCell>
             <TableCell className={classes.period}>Donnerstag</TableCell>
             <TableCell className={classes.period}>Freitag</TableCell>
-            <TableCell className={classes.period}>Samstag</TableCell>
+            {maxWeekday === 6 && <TableCell className={classes.period}>Samstag</TableCell>}
           </TableRow>
         </TableHead>
         <tbody>{renderPeriods()}</tbody>
@@ -105,9 +109,10 @@ const useStyles = makeStyles(({ palette }: Theme) =>
       background: palette.secondary.main,
       textAlign: 'center',
       border: '1px solid rgba(100, 100, 100, 1)',
+      width: '10%',
     },
     periodName: {
-      fontSize: '2rem',
+      fontSize: '1.0rem',
     },
   })
 );

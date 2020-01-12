@@ -8,17 +8,19 @@ import { Provider } from 'react-redux';
 import store from './app/store';
 import * as serviceWorker from './serviceWorker';
 
-// declare global {
-//   interface Window {
-//     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
-//   }
-// }
-
 const theme = createMuiTheme({
   spacing: 8,
   palette: {
     primary: indigo,
     secondary: orange,
+    background: {
+      paper: '#eee',
+      default: '#ccc',
+    },
+  },
+  typography: {
+    htmlFontSize: 14,
+    fontSize: 12,
   },
 });
 
