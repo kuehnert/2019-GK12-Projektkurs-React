@@ -1,38 +1,36 @@
-import { Theme, Table, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core/styles';
-import React, { Component } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import history from '../../history';
-import { getTerm } from './termSlice';
-import { getCourses } from '../courses/courseSlice';
-import { Lesson, Period } from '../terms/termSlice';
+import { Table, TableCell, TableHead, TableRow, Theme, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';
+import history from '../../history';
+import { getCourses } from '../courses/courseSlice';
+import { Lesson, Period } from '../terms/termSlice';
 import { Term } from './termSlice';
 
-class Timetable extends Component<Props> {
-  componentDidMount() {
-    const termId = this.props.termId;
+type Props = { term: Term };
 
-    if (this.props.term == null) {
-      this.props.getTerm(termId);
+const Timetable = ({ term }: Props) => {
+  const dispatch = useDispatch()
+  const courses = useSelector((state: RootState) => state.courses.courses[term.id]);
+  const classes = useStyles();
+  const periods = term?.periods || [];
+
+  useEffect(() => {
+    if (courses == null) {
+      dispatch(getCourses(term.id));
     }
+  }, [courses, dispatch, term.id]);
 
-    if (this.props.courses == null) {
-      this.props.getCourses(termId);
-    }
-  }
+  const timetable: { [key: string]: Lesson } = {};
 
-  renderPeriods() {
-    const { term, classes } = this.props;
-    const periods = term?.periods || [];
-    const timetable: { [key: string]: Lesson } = {};
+  term?.lessons.forEach(l => {
+    timetable[`${l.weekday},${l.periodNo}`] = l;
+  });
 
-    // term.lessons.forEach(l => {
-    //   timetable[`${l.weekday},${l.period}`] = l;
-    // });
-
+  const renderPeriods = () => {
     return periods.map((period: Period) => (
       <TableRow key={period.number}>
         <TableCell className={classes.period} align="center">
@@ -43,13 +41,16 @@ class Timetable extends Component<Props> {
           const lesson = timetable[`${weekday},${period.number}`];
 
           if (lesson != null) {
+            const course = courses.find(c => c.id === lesson.courseId);
+            console.log('course', course);
+
             return (
               <TableCell
                 key={weekday}
                 className={classes.lesson}
                 align="center"
                 onClick={() => history.push(`/terms/${term?.id}/courses/${lesson.courseId}`)}>
-                {/* <Typography variant="body1">{courses[lesson.courseId].name}</Typography> */}
+                <Typography variant="body1">{course?.name}</Typography>
                 <Typography variant="caption">{lesson.room}</Typography>
               </TableCell>
             );
@@ -59,39 +60,35 @@ class Timetable extends Component<Props> {
         })}
       </TableRow>
     ));
+  };
+
+  if (courses == null) {
+    return <Loading />;
   }
 
-  render() {
-    if (this.props.term == null) {
-      return <Loading />;
-    }
+  return (
+    <div>
+      <Typography variant="h5">Stundenplan</Typography>
 
-    const { classes } = this.props;
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell className={classes.period}>Stunde</TableCell>
+            <TableCell className={classes.period}>Montag</TableCell>
+            <TableCell className={classes.period}>Dienstag</TableCell>
+            <TableCell className={classes.period}>Mittwoch</TableCell>
+            <TableCell className={classes.period}>Donnerstag</TableCell>
+            <TableCell className={classes.period}>Freitag</TableCell>
+            <TableCell className={classes.period}>Samstag</TableCell>
+          </TableRow>
+        </TableHead>
+        <tbody>{renderPeriods()}</tbody>
+      </Table>
+    </div>
+  );
+};
 
-    return (
-      <div>
-        <Typography variant="h5">Stundenplan</Typography>
-
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell className={classes.period}>Stunde</TableCell>
-              <TableCell className={classes.period}>Montag</TableCell>
-              <TableCell className={classes.period}>Dienstag</TableCell>
-              <TableCell className={classes.period}>Mittwoch</TableCell>
-              <TableCell className={classes.period}>Donnerstag</TableCell>
-              <TableCell className={classes.period}>Freitag</TableCell>
-              <TableCell className={classes.period}>Samstag</TableCell>
-            </TableRow>
-          </TableHead>
-          <tbody>{this.renderPeriods()}</tbody>
-        </Table>
-      </div>
-    );
-  }
-}
-
-const styles = ({ palette }: Theme) =>
+const useStyles = makeStyles(({ palette }: Theme) =>
   createStyles({
     lesson: {
       background: palette.primary.main,
@@ -112,19 +109,7 @@ const styles = ({ palette }: Theme) =>
     periodName: {
       fontSize: '2rem',
     },
-  });
+  })
+);
 
-const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
-  courses: state.courses.courses[ownProps.termId],
-  term: state.terms.terms?.find((term: Term) => term.id === ownProps.termId),
-});
-
-const mapDispatchToProps = {
-  getCourses,
-  getTerm,
-};
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
-type OwnProps = { termId: string };
-type Props = ConnectedProps<typeof connector> & OwnProps & WithStyles<typeof styles>;
-export default connector(withStyles(styles)(Timetable));
+export default Timetable;

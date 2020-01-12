@@ -34,7 +34,7 @@ export class TermPage extends Component<Props> {
         <Fab onClick={() => history.push(`/terms/${term.id}/edit_timetable`)}>
           <EditIcon />
         </Fab>
-        <Timetable termId={term.id} />
+        <Timetable term={term} />
       </div>
     );
   }
