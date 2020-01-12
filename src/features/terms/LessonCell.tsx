@@ -1,8 +1,7 @@
 import { TableCell, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { Period } from './termSlice';
-import { Lesson } from '../courses/courseSlice';
+import { Lesson, Period } from './termSlice';
 import { useDrop } from 'react-dnd';
 
 interface Props {
@@ -41,7 +40,7 @@ const useStyles = makeStyles(({ palette }: Theme) =>
   })
 );
 
-const LessonTableCell: React.FC<Props> = ({ lesson, weekday, period }: Props) => {
+const LessonCell: React.FC<Props> = ({ lesson, weekday, period }: Props) => {
   const classes = useStyles();
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: 'Course',
@@ -74,4 +73,4 @@ const LessonTableCell: React.FC<Props> = ({ lesson, weekday, period }: Props) =>
   }
 };
 
-export default LessonTableCell;
+export default LessonCell;

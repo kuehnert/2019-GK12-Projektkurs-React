@@ -15,13 +15,16 @@ export interface TermBase {
   start?: Date;
   end?: Date;
   periods: Period[];
+  lessons: Lesson[];
 }
 
 export const defaultTerm: TermBase = {
-  name: '',
-  periods: [],
+  name: 'Neues Halbjahr',
+  // TODO: pick more intelligent default dates
   start: new Date(),
   end: new Date(),
+  periods: [],
+  lessons: [],
 };
 
 export interface TermState {
@@ -35,6 +38,13 @@ export interface Period {
   name: string;
   start: string;
   end: string;
+}
+
+export interface Lesson {
+  courseId: string;
+  weekday: number;
+  period: number;
+  room?: string;
 }
 
 // export interface PeriodState {

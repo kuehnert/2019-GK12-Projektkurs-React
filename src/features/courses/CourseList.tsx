@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import CourseDialog from './CourseDialog';
 import { Course, CourseBase, createCourse, defaultCourse } from './courseSlice';
-import EditCourseListItem from "./EditCourseListItem";
+import CourseItem from "./CourseItem";
 
 interface Props {
   termId: string;
@@ -30,7 +30,7 @@ const CourseList = (props: Props) => {
   };
 
   const renderCourses = () => {
-    return courses?.map((c: Course) => (<EditCourseListItem key={c.id} course={c} handleEditCourse={handleEditCourse} />));
+    return courses?.map((c: Course) => (<CourseItem key={c.id} course={c} termId={props.termId} handleEditCourse={handleEditCourse} />));
   };
 
   return (

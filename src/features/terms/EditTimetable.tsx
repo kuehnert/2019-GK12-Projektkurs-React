@@ -4,10 +4,9 @@ import { useSelector } from 'react-redux';
 import React from 'react';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';
-import { Lesson } from '../courses/courseSlice';
-import { Period, Term } from './termSlice';
+import { Lesson, Period, Term } from './termSlice';
 import { RootState } from '../../app/rootReducer';
-import LessonTableCell from './LessonTableCell';
+import LessonCell from './LessonCell';
 
 interface Props {
   termId: string;
@@ -59,7 +58,7 @@ export default function EditTimetable({ termId }: Props) {
         </TableCell>
         {[0, 1, 2, 3, 4, 5].map(weekday => {
           const lesson = timetable[`${weekday},${period.number}`];
-          return <LessonTableCell key={`${weekday}|${period}`} weekday={weekday} period={period} lesson={lesson} />;
+          return <LessonCell key={`${weekday}|${period}`} weekday={weekday} period={period} lesson={lesson} />;
         })}
       </TableRow>
     ));

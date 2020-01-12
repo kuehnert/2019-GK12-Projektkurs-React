@@ -4,8 +4,8 @@ import React, { Component } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import history from '../../history';
 import { getTerm } from './termSlice';
-import { Lesson, getCourses } from '../courses/courseSlice';
-import { Period } from '../terms/termSlice'
+import { getCourses } from '../courses/courseSlice';
+import { Lesson, Period } from '../terms/termSlice'
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';

@@ -8,14 +8,6 @@ export interface Enrolment {
   studentId: string;
 }
 
-export interface Lesson {
-  // id: string;
-  courseId: string;
-  weekday: number;
-  period: number;
-  room?: string;
-}
-
 export interface Course extends CourseBase {
   id: string;
 }
@@ -29,7 +21,6 @@ export interface CourseBase {
   logAbsences: boolean;
   logHomework: boolean;
   enrolments: Enrolment[];
-  lessons: Lesson[];
 }
 
 export const defaultCourse: Course = {
@@ -42,7 +33,6 @@ export const defaultCourse: Course = {
   logCourse: true,
   logHomework: true,
   enrolments: [],
-  lessons: [],
 };
 
 export interface CourseState {

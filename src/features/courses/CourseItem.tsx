@@ -3,9 +3,13 @@ import { IconButton, ListItem, ListItemIcon, ListItemText } from '@material-ui/c
 import { Book as BookIcon, EditOutlined as EditIcon } from '@material-ui/icons';
 import { useDrag, DragSourceMonitor } from 'react-dnd';
 import { Course } from './courseSlice';
+import { useSelector } from "react-redux";
+import { RootState } from '../../app/rootReducer'
+import { Term } from '../terms/termSlice'
 
 interface Props {
   course: Course;
+  termId: string;
   handleEditCourse: (course: Course) => void;
 }
 
@@ -15,7 +19,8 @@ interface DropResult {
   period: number;
 }
 
-const EditCourseListItem: React.FC<Props> = ({ course, handleEditCourse }: Props) => {
+const CourseItem: React.FC<Props> = ({ course, termId, handleEditCourse }: Props) => {
+  const term = useSelector((state: RootState) => state.terms.terms.find(t => t.id === termId)) as Term;
   const item = { courseId: course.id, type: 'Course' };
   const [{ opacity }, drag] = useDrag({
     item,
@@ -25,7 +30,7 @@ const EditCourseListItem: React.FC<Props> = ({ course, handleEditCourse }: Props
         console.log(item);
         console.log(course);
         console.log(dropResult);
-        console.log(course.lessons);
+        console.log(term.lessons);
         // TODO: Create lesson (and delete old one if necessary)
         // course.lessons.push({
         //   courseId: course.id,
@@ -54,4 +59,4 @@ const EditCourseListItem: React.FC<Props> = ({ course, handleEditCourse }: Props
   );
 };
 
-export default EditCourseListItem;
+export default CourseItem;
