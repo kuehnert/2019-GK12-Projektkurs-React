@@ -44,9 +44,7 @@ export default function EditTimetable({ termId }: Props) {
     const lessons = term?.lessons || [];
     const timetable: { [key: string]: Lesson } = {};
 
-    lessons.forEach(l => {
-      timetable[`${l.weekday},${l.period}`] = l;
-    });
+    lessons.forEach(l => timetable[`${l.weekday},${l.periodNo}`] = l);
 
     return periods.map((period: Period) => (
       <TableRow key={period.number}>

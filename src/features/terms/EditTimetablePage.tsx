@@ -9,6 +9,8 @@ import { getTerm } from './termSlice';
 import { getCourses } from '../courses/courseSlice';
 import { DndProvider } from 'react-dnd';
 import Backend from 'react-dnd-html5-backend'
+import TrashCan from '../../components/TrashCan';
+import history from '../../history';
 
 type MatchParams = { termId: string };
 
@@ -54,12 +56,13 @@ export default (props: RouteComponentProps<MatchParams>) => {
 
         <Grid item xs={3}>
           <CourseList termId={termId} />
+
+          <TrashCan />
         </Grid>
       </Grid>
 
       <div className={classes.buttons}>
-      <Button variant="contained" color="primary">Abbrechen</Button>
-      <Button variant="contained" color="secondary">Speichern</Button>
+        <Button variant="contained" color="primary" onClick={() => history.goBack()}>Zurück</Button>
       </div>
     </DndProvider>
   );

@@ -1,9 +1,9 @@
 import { TableCell, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { Lesson, Period } from './termSlice';
-import { useDrop } from 'react-dnd';
-import { useSelector } from 'react-redux';
+import { Lesson, Period, deleteLesson, updateLesson } from './termSlice';
+import { DragSourceMonitor, useDrag, useDrop } from 'react-dnd';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 
 interface Props {
@@ -47,9 +47,10 @@ const useStyles = makeStyles(({ palette }: Theme) =>
 
 const LessonCell: React.FC<Props> = ({ lesson, weekday, period, termId }: Props) => {
   const courses = useSelector((state: RootState) => state.courses.courses[termId]);
+  const dispatch = useDispatch();
   const classes = useStyles();
   const [{ canDrop, isOver }, drop] = useDrop({
-    accept: 'Course',
+    accept: ['Course', 'Lesson'],
     drop: () => ({
       weekday,
       period,
@@ -60,6 +61,25 @@ const LessonCell: React.FC<Props> = ({ lesson, weekday, period, termId }: Props)
       canDrop: monitor.canDrop(),
     }),
   });
+  const item = { weekday, period, movingLesson: lesson, type: 'Lesson' };
+  const [{ opacity }, drag] = useDrag({
+    item,
+    end(item: { movingLesson: Lesson } | undefined, monitor: DragSourceMonitor) {
+      const dropResult: any = monitor.getDropResult();
+      // console.log('item', item);
+      // console.log('dropResult', dropResult);
+
+      if (item?.movingLesson && dropResult.type === 'TrashCan') {
+        dispatch(deleteLesson(termId, item.movingLesson));
+      } else if (item && dropResult) {
+        dispatch(updateLesson(termId, item.movingLesson, { weekday: dropResult.weekday, periodNo: dropResult.period.number } ));
+      }
+    },
+    collect: (monitor: any) => ({
+      opacity: monitor.isDragging() ? 0.4 : 1,
+    }),
+  });
+
   const isActive = canDrop && isOver;
   const hasLesson = lesson != null;
   const backgroundColor = selectBackgroundColor(isActive, canDrop, hasLesson);
@@ -71,14 +91,16 @@ const LessonCell: React.FC<Props> = ({ lesson, weekday, period, termId }: Props)
 
     return (
       <TableCell ref={drop} style={{ backgroundColor }} className={classes.lesson}>
-        <Typography variant="body1">{course?.name}</Typography>
-        <Typography variant="caption">{lesson.room}</Typography>
+        <div ref={drag} style={{ opacity }}>
+          <Typography variant="body1">{course?.name}</Typography>
+          <Typography variant="caption">{lesson.room}</Typography>
+        </div>
       </TableCell>
     );
   } else {
     return (
       <TableCell ref={drop} style={{ backgroundColor }} className={classes.lessonBlank}>
-        <Typography>{isActive ? 'Neue Stunde' : '-'}</Typography>
+        <Typography>{isActive ? 'Neue Stunde' : ''}</Typography>
       </TableCell>
     );
   }

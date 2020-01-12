@@ -16,7 +16,7 @@ export interface CourseBase {
   termId: string;
   name: string;
   year: number;
-  endDate: Date;
+  end: Date;
   logCourse: boolean;
   logAbsences: boolean;
   logHomework: boolean;
@@ -26,7 +26,7 @@ export interface CourseBase {
 export const defaultCourse: Course = {
   id: 'dummy',
   termId: 'dummy',
-  endDate: new Date(),
+  end: new Date(),
   name: 'Unbenannt',
   year: 5,
   logAbsences: true,
@@ -69,9 +69,10 @@ export const courseSlice = createSlice({
     },
     updateCourseSuccess(state, action: PayloadAction<{ termId: string; course: Course }>) {
       const { termId, course } = action.payload;
-      const courses = state.courses[termId];
+      let courses = state.courses[termId];
       const index = courses.findIndex(c => c.id === course.id);
       courses[index] = course;
+      courses = courses.sort((a, b) => a.name.localeCompare(b.name));
     },
     updateCourseFailed(state, action: PayloadAction<string>) {
       state.courses = {};

@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import history from '../../history';
 import { getTerm } from './termSlice';
 import { getCourses } from '../courses/courseSlice';
-import { Lesson, Period } from '../terms/termSlice'
+import { Lesson, Period } from '../terms/termSlice';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';
@@ -29,12 +29,9 @@ class Timetable extends Component<Props> {
     const periods = term?.periods || [];
     const timetable: { [key: string]: Lesson } = {};
 
-    // Object.values(courses).forEach((c: Course) => {
-    //   c.lessons.forEach((l) => {
-    //     timetable[`${l.weekday},${l.period}`] = l;
-    //   });
+    // term.lessons.forEach(l => {
+    //   timetable[`${l.weekday},${l.period}`] = l;
     // });
-    // console.log(periods[0].start, typeof periods[0].start);
 
     return periods.map((period: Period) => (
       <TableRow key={period.number}>

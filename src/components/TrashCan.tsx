@@ -1,7 +1,9 @@
-import { Theme, Typography } from '@material-ui/core';
+import { Card, CardContent, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useDrop } from 'react-dnd';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+
 // import { useSelector } from 'react-redux';
 // import { RootState } from '../../app/rootReducer';
 
@@ -15,16 +17,31 @@ function selectBackgroundColor(isActive: boolean, canDrop: boolean) {
   }
 }
 
-const useStyles = makeStyles(({ palette }: Theme) => createStyles({}));
+const useStyles = makeStyles(({ palette }: Theme) =>
+  createStyles({
+    trashCan: {
+      position: 'static',
+      bottom: '12px',
+      display: 'flex',
+      alignItems: 'center',
+      flexDirection: 'column',
+    },
+    content: {
+      // display: 'flex',
+      // alignItems: 'center',
+    },
+    icon: {
+      fontSize: 64,
+    },
+  })
+);
 
-const TrashCan: React.FC<Props> = ({ lesson, weekday, period, termId }: Props) => {
+const TrashCan: React.FC = () => {
   const classes = useStyles();
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: 'Lesson',
     drop: () => ({
-      weekday,
-      period,
-      oldLesson: lesson,
+      type: 'TrashCan',
     }),
     collect: (monitor: any) => ({
       isOver: monitor.isOver(),
@@ -35,9 +52,12 @@ const TrashCan: React.FC<Props> = ({ lesson, weekday, period, termId }: Props) =
   const backgroundColor = selectBackgroundColor(isActive, canDrop);
 
   return (
-    <TableCell ref={drop} style={{ backgroundColor }} className={classes.lessonBlank}>
-      <Typography>{isActive ? 'Neue Stunde' : '-'}</Typography>
-    </TableCell>
+    <Card ref={drop} style={{ backgroundColor }} className={classes.trashCan}>
+      <CardContent className={classes.content}>
+        <DeleteOutlinedIcon className={classes.icon}></DeleteOutlinedIcon>
+        <Typography variant="body2">Entfernen</Typography>
+      </CardContent>
+    </Card>
   );
 };
 

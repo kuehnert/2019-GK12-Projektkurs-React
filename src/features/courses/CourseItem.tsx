@@ -35,10 +35,10 @@ const CourseItem: React.FC<Props> = ({ course, termId, handleEditCourse }: Props
           {
             courseId: course.id,
             weekday: dropResult.weekday,
-            period: dropResult.period.number,
+            periodNo: dropResult.period.number,
           },
         ];
-        console.log(newLessons);
+        // console.log(newLessons);
         dispatch(updateTerm({ ...term, lessons: newLessons }));
       }
     },

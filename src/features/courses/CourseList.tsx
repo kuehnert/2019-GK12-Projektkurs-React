@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import CourseDialog from './CourseDialog';
 import { Course, CourseBase, createCourse, defaultCourse } from './courseSlice';
-import CourseItem from "./CourseItem";
+import CourseItem from './CourseItem';
 
 interface Props {
   termId: string;
@@ -15,12 +15,13 @@ interface Props {
 const CourseList = (props: Props) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editedCourse, setEditedCourse] = useState(defaultCourse);
+  const term = useSelector((state: RootState) => state.terms.terms.find(t => t.id === props.termId));
   const courses = useSelector((state: RootState) => state.courses.courses[props.termId]);
   const dispatch = useDispatch();
   const classes = useStyles();
 
   const handleCreateCourse = () => {
-    const newCourse: CourseBase = defaultCourse;
+    const newCourse: CourseBase = { ...defaultCourse, end: term?.end || new Date() };
     dispatch(createCourse(props.termId, newCourse));
   };
 
@@ -30,12 +31,14 @@ const CourseList = (props: Props) => {
   };
 
   const renderCourses = () => {
-    return courses?.map((c: Course) => (<CourseItem key={c.id} course={c} termId={props.termId} handleEditCourse={handleEditCourse} />));
+    return courses?.map((c: Course) => (
+      <CourseItem key={c.id} course={c} termId={props.termId} handleEditCourse={handleEditCourse} />
+    ));
   };
 
   return (
     <div
-      // className={classes.root}
+    // className={classes.root}
     // classes={{ paper: classes.paper }}
     >
       <Typography variant="h4">Kurse</Typography>

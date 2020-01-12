@@ -43,7 +43,7 @@ export interface Period {
 export interface Lesson {
   courseId: string;
   weekday: number;
-  period: number;
+  periodNo: number;
   room?: string;
 }
 
@@ -72,14 +72,14 @@ const termSlice = createSlice({
       index > -1 ? (terms[index] = term) : terms.push(term);
     },
     getTermFailed(state, action: PayloadAction<string>) {
-      state.terms = [];
+      // state.terms = [];
       state.error = action.payload;
     },
     createTermSuccess(state, action: PayloadAction<Term>) {
       state.terms.unshift(action.payload);
     },
     createTermFailed(state, action: PayloadAction<string>) {
-      state.terms = [];
+      // state.terms = [];
       state.error = action.payload;
     },
     updateTermSuccess(state, action: PayloadAction<Term>) {
@@ -89,15 +89,28 @@ const termSlice = createSlice({
       terms[index] = term;
     },
     updateTermFailed(state, action: PayloadAction<string>) {
-      state.terms = [];
+      // state.terms = [];
       state.error = action.payload;
     },
     deleteTermSuccess(state, action: PayloadAction<Term>) {
       state.terms = state.terms.filter(term => term.id !== action.payload.id);
     },
     deleteTermFailed(state, action: PayloadAction<string>) {
-      state.terms = [];
+      // state.terms = [];
       state.error = action.payload;
+    },
+    createLessonSuccess(state, action: PayloadAction<Lesson>) {},
+    updateLessonSuccess(state, action: PayloadAction<Term>) {
+      const { terms } = state;
+      const term = action.payload;
+      const index = terms.findIndex((t: Term) => t.id === term.id);
+      terms[index] = term;
+    },
+    deleteLessonSuccess(state, action: PayloadAction<Term>) {
+      const { terms } = state;
+      const term = action.payload;
+      const index = terms.findIndex((t: Term) => t.id === term.id);
+      terms[index] = term;
     },
   },
 });
@@ -113,6 +126,8 @@ export const {
   updateTermFailed,
   deleteTermSuccess,
   deleteTermFailed,
+  deleteLessonSuccess,
+  updateLessonSuccess,
 } = termSlice.actions;
 
 export default termSlice.reducer;
@@ -189,4 +204,38 @@ export const deleteTerm = (termId: string): AppThunk => async dispatch => {
   }
 
   dispatch(deleteTermSuccess(term));
+};
+
+export const updateLesson = (
+  termId: string,
+  values: Lesson,
+  { weekday, periodNo }: { weekday: number; periodNo: number }
+): AppThunk => async dispatch => {
+  const teacherId = getTeacherId();
+  const termResult = await sokratesApi.get(`/teachers/${teacherId}/terms/${termId}`, { headers: authHeader() });
+  let term = termResult.data;
+
+  const index = term.lessons.findIndex((l: Lesson) => l.weekday === values.weekday && l.periodNo === values.periodNo);
+  term.lessons[index] = { ...term.lessons[index], weekday, periodNo };
+
+  await sokratesApi.patch(`/teachers/${teacherId}/terms/${termId}`, term, {
+    headers: authHeader(),
+  });
+
+  dispatch(updateLessonSuccess(term));
+};
+
+export const deleteLesson = (termId: string, values: Lesson): AppThunk => async dispatch => {
+  const teacherId = getTeacherId();
+  const termResult = await sokratesApi.get(`/teachers/${teacherId}/terms/${termId}`, { headers: authHeader() });
+  let term = termResult.data;
+
+  const lessons = term.lessons.filter((l: Lesson) => l.weekday !== values.weekday || l.periodNo !== values.periodNo);
+
+  term.lessons = lessons;
+  await sokratesApi.patch(`/teachers/${teacherId}/terms/${termId}`, term, {
+    headers: authHeader(),
+  });
+
+  dispatch(deleteLessonSuccess(term));
 };

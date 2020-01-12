@@ -41,7 +41,7 @@ const CourseDialog = (props: Props) => {
 
               <Field name="name" label="Name" placeholder="2019/20 2. Hj" component={FTextField} />
               <Field name="year" label="Jahrgang" placeholder="5" component={FTextField} />
-              <Field name="endDate" label="Enddatum" placeholder="01.02.2020" component={FDatePicker} />
+              <Field name="end" label="Enddatum" placeholder="01.02.2020" component={FDatePicker} />
               <Field name="logCourse" component={FCheckbox} label="Kursheft führen" />
               <Field name="logAbsences" component={FCheckbox} label="Anwesenheit nachhalten" />
               <Field name="logHomework" component={FCheckbox} label="Fehlende Hausaufgaben nachhalten" />
