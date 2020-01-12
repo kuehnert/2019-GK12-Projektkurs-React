@@ -1,11 +1,11 @@
 import { Table, TableCell, TableHead, TableRow, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
+import { RootState } from '../../app/rootReducer';
 import React from 'react';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';
 import { Lesson, Period, Term } from './termSlice';
-import { RootState } from '../../app/rootReducer';
 import LessonCell from './LessonCell';
 
 interface Props {
@@ -19,7 +19,7 @@ const useStyles = makeStyles(({ palette }: Theme) =>
       background: palette.secondary.main,
       textAlign: 'center',
       border: '1px solid rgba(100, 100, 100, 1)',
-      fontSize: '0.7rem'
+      fontSize: '0.7rem',
     },
     periodName: {
       fontSize: '2rem',
@@ -29,8 +29,8 @@ const useStyles = makeStyles(({ palette }: Theme) =>
       background: palette.secondary.main,
       textAlign: 'center',
       border: '1px solid rgba(100, 100, 100, 1)',
-      width: '15%'
-    }
+      width: '15%',
+    },
   })
 );
 
@@ -41,14 +41,12 @@ export default function EditTimetable({ termId }: Props) {
 
   const renderPeriods = () => {
     const periods = term?.periods || [];
+    const lessons = term?.lessons || [];
     const timetable: { [key: string]: Lesson } = {};
 
-    // Object.values(courses).forEach((c: Course) => {
-    //   c.lessons.forEach((l) => {
-    //     timetable[`${l.weekday},${l.period}`] = l;
-    //   });
-    // });
-    // console.log(periods[0].start, typeof periods[0].start);
+    lessons.forEach(l => {
+      timetable[`${l.weekday},${l.period}`] = l;
+    });
 
     return periods.map((period: Period) => (
       <TableRow key={period.number}>
@@ -58,7 +56,7 @@ export default function EditTimetable({ termId }: Props) {
         </TableCell>
         {[0, 1, 2, 3, 4, 5].map(weekday => {
           const lesson = timetable[`${weekday},${period.number}`];
-          return <LessonCell key={`${weekday}|${period}`} weekday={weekday} period={period} lesson={lesson} />;
+          return <LessonCell key={`${weekday}|${period}`} weekday={weekday} period={period} lesson={lesson} termId={termId} />;
         })}
       </TableRow>
     ));

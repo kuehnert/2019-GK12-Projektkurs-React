@@ -3,9 +3,9 @@ import { IconButton, ListItem, ListItemIcon, ListItemText } from '@material-ui/c
 import { Book as BookIcon, EditOutlined as EditIcon } from '@material-ui/icons';
 import { useDrag, DragSourceMonitor } from 'react-dnd';
 import { Course } from './courseSlice';
-import { useSelector } from "react-redux";
-import { RootState } from '../../app/rootReducer'
-import { Term } from '../terms/termSlice'
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../app/rootReducer';
+import { Term, updateTerm } from '../terms/termSlice';
 
 interface Props {
   course: Course;
@@ -21,22 +21,25 @@ interface DropResult {
 
 const CourseItem: React.FC<Props> = ({ course, termId, handleEditCourse }: Props) => {
   const term = useSelector((state: RootState) => state.terms.terms.find(t => t.id === termId)) as Term;
+  const dispatch = useDispatch();
   const item = { courseId: course.id, type: 'Course' };
   const [{ opacity }, drag] = useDrag({
     item,
     end(item: { name: string } | undefined, monitor: DragSourceMonitor) {
-      const dropResult: DropResult = monitor.getDropResult();
+      const dropResult: any = monitor.getDropResult();
+      // console.log('dropResult', dropResult);
+
       if (item && dropResult) {
-        console.log(item);
-        console.log(course);
-        console.log(dropResult);
-        console.log(term.lessons);
-        // TODO: Create lesson (and delete old one if necessary)
-        // course.lessons.push({
-        //   courseId: course.id,
-        //   weekday: 1,
-        //   period: 1,
-        // });
+        const newLessons = [
+          ...term.lessons,
+          {
+            courseId: course.id,
+            weekday: dropResult.weekday,
+            period: dropResult.period.number,
+          },
+        ];
+        console.log(newLessons);
+        dispatch(updateTerm({ ...term, lessons: newLessons }));
       }
     },
     collect: (monitor: any) => ({
@@ -46,9 +49,9 @@ const CourseItem: React.FC<Props> = ({ course, termId, handleEditCourse }: Props
 
   return (
     <ListItem ref={drag} style={{ opacity }}>
-      <ListItemIcon>
+      {/* <ListItemIcon>
         <BookIcon />
-      </ListItemIcon>
+      </ListItemIcon> */}
 
       <ListItemText>{course.name}</ListItemText>
 
