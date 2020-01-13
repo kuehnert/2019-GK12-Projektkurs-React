@@ -9,24 +9,18 @@ import { Course } from './courseSlice';
 import papaparse from 'papaparse';
 import { parse, isValid } from 'date-fns';
 import { formatDate, formatSex } from '../../utils/formatter';
+import { StudentBase } from './studentSlice';
 
 interface Props {
   term: Term;
   course: Course;
 }
 
-interface StudentBase {
-  firstname: string;
-  lastname: string;
-  sex: number;
-  phone?: string;
-  email?: string;
-  dob?: Date;
-}
-
 const headerMap: { [key: string]: string } = {
   Nachname: 'lastname',
   Vorname: 'firstname',
+  Stufe: 'formGroup',
+  Klasse: 'formGroup',
   Geschlecht: 'sex',
   Telefon: 'phone',
   Geburtstag: 'dob',
@@ -58,6 +52,7 @@ const sampleCSV = `Nr.,Nachname,Vorname,Geschlecht,Belegung,Telefon,Alter,Geburt
 export default (props: Props) => {
   const { term, course } = props;
   const [csvData, setCsvData] = useState(sampleCSV);
+  const [formGroup, setFormGroup] = useState('');
   const [students, setStudents] = useState(Array<StudentBase>());
   // const dispatch = useDispatch();
   const classes = useStyles();
@@ -65,8 +60,9 @@ export default (props: Props) => {
   // const parseCsv = (event: React.ChangeEvent<HTMLInputElement>) => {
   // setCsvData(event.target.value);
   const parseCsv = () => {
-    let result = papaparse.parse(csvData, {
+    const result = papaparse.parse(csvData.trim(), {
       header: true,
+      skipEmptyLines: true,
       transformHeader: header => headerMap[header],
       transform: (value, header) => {
         switch (header) {
@@ -86,11 +82,12 @@ export default (props: Props) => {
       },
     });
 
-    setStudents(result.data);
+    const newStudents = result.data.map(s => ({ ...s, formGroup }));
+    setStudents(newStudents);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => parseCsv(), [csvData]);
+  useEffect(() => parseCsv(), [csvData, formGroup]);
 
   if (term == null || course == null) {
     return <Loading />;
@@ -98,12 +95,12 @@ export default (props: Props) => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h4">Schülerdaten importieren</Typography>
+      {/* <Typography variant="h4">Schülerdaten importieren</Typography> */}
 
       <Box className={classes.box}>
         <TextField
-          id="outlined-multiline-static"
-          label="Multiline"
+          id="csv-data"
+          label="Schülerdaten im CSV-Format"
           autoFocus
           multiline
           fullWidth
@@ -115,7 +112,16 @@ export default (props: Props) => {
       </Box>
 
       <div className={classes.box}>
-        <Button variant="contained" color="primary">
+        <TextField
+          id="formGroup"
+          label="Klasse/Stufe"
+          value={formGroup}
+          placeholder="5a, 10"
+          size="small"
+          variant="outlined"
+          onChange={e => setFormGroup(e.target.value)}
+        />
+        <Button variant="contained" color="primary" className={classes.button} disabled={formGroup === ''}>
           Importieren
         </Button>
       </div>
@@ -126,14 +132,14 @@ export default (props: Props) => {
             <Grid item xs={3} key={`${s.lastname},${s.firstname}`} className={classes.card}>
               <Card className={classes.card}>
                 <CardContent className={classes.cardContent}>
-                  <Typography variant="h6" component="h4" color="primary">
+                  <Typography variant="h6" component="h5" color="primary">
                     {s.lastname}, {s.firstname} {formatSex(s.sex)}
                   </Typography>
                   <Typography variant="body1" component="p" color="secondary" className={classes.cardNumber}>
                     {i + 1}
                   </Typography>
                   <Typography variant="body2" component="p">
-                    {formatDate(s.dob, 'long') || '?'}
+                    Klasse {s.formGroup || '?'}, *{formatDate(s.dob, 'long') || '?'}
                   </Typography>
                   <Typography>
                     {s.phone || '?'}
@@ -155,8 +161,11 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {},
     box: {
       padding: theme.spacing(0),
-      marginBottom: theme.spacing(1),
-      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(2),
+      marginTop: theme.spacing(2),
+    },
+    button: {
+      marginLeft: theme.spacing(2),
     },
     paper: {
       backgroundColor: theme.palette.background.default,
@@ -177,14 +186,15 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'block',
       float: 'right',
       position: 'relative',
-      right: 0,
-      top: '-30px',
+      right: '0px',
+      top: '30px',
       transform: 'rotate(20deg)',
       width: '2rem',
       backgroundColor: theme.palette.secondary.light,
       color: theme.palette.secondary.contrastText,
       textAlign: 'center',
       padding: theme.spacing(0.5),
+      zIndex: 1,
     },
   })
 );
