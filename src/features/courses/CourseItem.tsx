@@ -1,11 +1,11 @@
+import { IconButton, ListItem, ListItemText } from '@material-ui/core';
+import { EditOutlined as EditIcon } from '@material-ui/icons';
 import React from 'react';
-import { IconButton, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Book as BookIcon, EditOutlined as EditIcon } from '@material-ui/icons';
-import { useDrag, DragSourceMonitor } from 'react-dnd';
-import { Course } from './courseSlice';
+import { DragSourceMonitor, useDrag } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import { Term, updateTerm } from '../terms/termSlice';
+import { Course } from './courseSlice';
 
 interface Props {
   course: Course;

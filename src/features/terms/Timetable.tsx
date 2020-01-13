@@ -46,7 +46,6 @@ const Timetable = ({ term }: Props) => {
 
           if (lesson != null) {
             const course = courses.find(c => c.id === lesson.courseId);
-            console.log('course', course);
 
             return (
               <TableCell
