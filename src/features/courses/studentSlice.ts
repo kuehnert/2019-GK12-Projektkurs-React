@@ -11,6 +11,7 @@ export interface Student extends StudentBase {
 export interface StudentBase {
   firstname: string;
   lastname: string;
+  year: number;
   formGroup: string;
   sex: number;
   phone?: string;
@@ -34,9 +35,16 @@ export const studentSlice = createSlice({
   name: 'students',
   initialState,
   reducers: {
+    getTermStudentsSuccess(state, action: PayloadAction<{ termId: string; students: Student[] }>) {
+      const { termId, students } = action.payload;
+      state.students[termId] = students;
+    },
+    getTermStudentsFailed(state, action: PayloadAction<string>) {
+      state.error = action.payload;
+    },
     createStudentsForCourseSuccess(state, action: PayloadAction<{ termId: string; students: Student[] }>) {
-      // const { termId, course } = action.payload;
-      // state.courses[termId].push(course);
+      const { termId, students } = action.payload;
+      state.students[termId].concat(students);
     },
     createStudentsForCourseFailed(state, action: PayloadAction<string>) {
       state.error = action.payload;
@@ -48,6 +56,21 @@ export const { createStudentsForCourseFailed, createStudentsForCourseSuccess } =
 
 export default studentSlice.reducer;
 
+export const getTermStudents = (termId: string): AppThunk => async dispatch => {
+  let students;
+  try {
+    const teacherId = getTeacherId();
+    const result = await sokratesApi.get(`/teachers/${teacherId}/terms/${termId}/students`, { headers: authHeader() });
+    console.log(result);
+    students = result.data;
+  } catch (error) {
+    dispatch(createStudentsForCourseFailed(error.toString()));
+    return;
+  }
+
+  dispatch(createStudentsForCourseSuccess({ termId, students }));
+};
+
 export const createStudentsForCourse = (
   termId: string,
   courseId: string,
@@ -56,18 +79,14 @@ export const createStudentsForCourse = (
   let students;
   try {
     const teacherId = getTeacherId();
-    const result = await sokratesApi.post(
-      `/teachers/${teacherId}/terms/${termId}/courses/${courseId}/students`,
-      values,
-      {
-        headers: authHeader(),
-      }
-    );
+    const result = await sokratesApi.post(`/teachers/${teacherId}/terms/${termId}/students`, values, {
+      headers: authHeader(),
+    });
     students = result.data;
   } catch (error) {
     dispatch(createStudentsForCourseFailed(error.toString()));
     return;
   }
 
-  dispatch(createStudentsForCourseSuccess({termId, students}));
+  dispatch(createStudentsForCourseSuccess({ termId, students }));
 };

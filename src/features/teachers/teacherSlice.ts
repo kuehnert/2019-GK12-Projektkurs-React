@@ -8,8 +8,8 @@ export interface Teacher {
   id: string;
   firstname: string;
   lastname: string;
-  schoolName?: string;
-  state?: string;
+  schoolName: string;
+  state: string;
   email: string;
   terms: Term[];
 }
@@ -19,6 +19,14 @@ export interface TeacherState {
   isRequesting: boolean;
   teacher: Teacher | null;
   error: string | null;
+}
+
+export interface SignUpValues {
+  firstname: string;
+  lastname: string;
+  schoolName: string;
+  state: string;
+  email: string;
 }
 
 export interface LoginValues {
@@ -54,6 +62,18 @@ const teacherSlice = createSlice({
       state.error = action.payload;
       state.isRequesting = false;
     },
+    signUpSuccess(state, action: PayloadAction<Teacher>) {
+      state.teacher = action.payload;
+      state.isLoggedIn = action.payload != null;
+      state.error = null;
+      state.isRequesting = false;
+    },
+    signUpFailed(state, action: PayloadAction<string>) {
+      state.teacher = null;
+      state.isLoggedIn = false;
+      state.error = action.payload;
+      state.isRequesting = false;
+    },
     logoutSuccess(state, action: PayloadAction) {
       state.teacher = null;
       state.isLoggedIn = false;
@@ -66,18 +86,18 @@ const teacherSlice = createSlice({
       state.error = action.payload;
       state.isRequesting = false;
     },
-    loginSubmitting(state, action: PayloadAction) {
+    submitting(state, action: PayloadAction) {
       state.isRequesting = true;
     },
   },
 });
 
-export const { loginSuccess, logoutSuccess, loginSubmitting, loginFailed, logoutFailed } = teacherSlice.actions;
+export const { loginSuccess, logoutSuccess, submitting, loginFailed, logoutFailed, signUpFailed, signUpSuccess } = teacherSlice.actions;
 
 export default teacherSlice.reducer;
 
 export const login = (values: LoginValues): AppThunk => async dispatch => {
-  dispatch(loginSubmitting());
+  dispatch(submitting());
   let teacher, token;
   try {
     const response = await sokratesApi.post('/teachers/login', values);
@@ -92,6 +112,25 @@ export const login = (values: LoginValues): AppThunk => async dispatch => {
   }
 
   dispatch(loginSuccess(teacher));
+};
+
+export const signUp = (values: SignUpValues): AppThunk => async dispatch => {
+  dispatch(submitting());
+  let teacher, token;
+
+  try {
+    const response = await sokratesApi.post('/teachers', values);
+    teacher = response.data.teacher;
+    token = response.data.token;
+
+    localStorage.setItem('teacher', JSON.stringify(teacher));
+    localStorage.setItem('token', token);
+  } catch (error) {
+    dispatch(signUpFailed(error.toString()));
+    return;
+  }
+
+  dispatch(signUpSuccess(teacher));
 };
 
 export const logout = (): AppThunk => async dispatch => {

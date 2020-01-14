@@ -1,63 +1,70 @@
-import { Typography } from '@material-ui/core';
-import React, { Component } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-import { getTerm, updateTerm } from './termSlice';
-import { Term, TermBase } from './termSlice';
-import history from '../../history';
-import { RootState } from '../../app/rootReducer';
-import Loading from '../../components/Loading';
-import TermForm from './TermForm';
+import { Paper, Theme, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
+import Loading from '../../components/Loading';
+import history from '../../history';
+import { useTerm } from '../../utils/selectors';
+import TermForm from './TermForm';
+import { getTerm, Term, TermBase, updateTerm } from './termSlice';
+import { getTermStudents } from "../courses/studentSlice";
 
-class EditTermPage extends Component<Props> {
-  componentDidMount() {
-    const { termId } = this.props.match.params;
-    this.props.getTerm(termId);
-  }
+interface MatchParams {
+  termId: string;
+}
 
-  handleSubmit = async (values: TermBase) => {
+export default (props: RouteComponentProps<MatchParams>) => {
+  const { termId } = props.match.params;
+  const term = useTerm(termId);
+  const dispatch = useDispatch();
+  const classes = useStyles();
+  useEffect(() => {
+    dispatch(getTerm(termId));
+    dispatch(getTermStudents(termId));
+  }, [dispatch, termId]);
+
+  const handleSubmit = async (values: TermBase) => {
     try {
-      await this.props.updateTerm(values as Term);
+      await dispatch(updateTerm(values as Term));
       history.push(`/terms`);
     } catch (error) {
       console.error(error);
     }
   };
 
-  render() {
-    const { term } = this.props;
-
-    if (term == null) {
-      return <Loading />;
-    }
-
-    return (
-      <div>
-        <Typography variant="h2">Halbjahr bearbeiten: {term.name}</Typography>
-
-        <TermForm
-          handleSubmit={(values: TermBase) => this.handleSubmit(values)}
-          initialValues={term}
-        />
-      </div>
-    );
+  if (term == null) {
+    return <Loading />;
   }
-}
 
-const mapStateToProps = (state: RootState, props: MatchProps) => {
-  // console.log(props);
+  return (
+    <div className={classes.root}>
+      <Typography variant="h3">Halbjahr bearbeiten: {term.name}</Typography>
 
-  return {
-    term: state.terms.terms?.find((term: Term) => term.id === props.match.params.termId),
-  };
+      <Paper className={classes.paper}>
+        <TermForm handleSubmit={(values: TermBase) => handleSubmit(values)} initialValues={term} />
+      </Paper>
+
+      <Paper className={classes.paper}>
+        <Typography variant="h4">Schülerinnen und Schüler</Typography>
+
+      </Paper>
+    </div>
+  );
 };
 
-const mapDispatchToProps = { getTerm, updateTerm };
-const connector = connect(mapStateToProps, mapDispatchToProps);
-
-interface MatchParams {
-  termId: string;
-}
-interface MatchProps extends RouteComponentProps<MatchParams> {}
-type Props = ConnectedProps<typeof connector> & MatchProps;
-export default connector(EditTermPage);
+const useStyles = makeStyles(({ palette, spacing }: Theme) =>
+  createStyles({
+    root: {
+      padding: 0,
+      margin: 0,
+    },
+    paper: {
+      padding: spacing(2),
+      margin: spacing(2),
+      marginLeft: spacing(0),
+      marginRight: spacing(0),
+      background: '#f5f5f5',
+    },
+  })
+);

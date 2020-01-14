@@ -10,7 +10,7 @@ import EditTermPage from '../features/terms/EditTermPage';
 import EditTimetablePage from "../features/terms/EditTimetablePage";
 import TermPage from '../features/terms/TermPage';
 import TermsPage from '../features/terms/TermsPage';
-import WelcomePage from '../features/welcome/WelcomePage';
+import RedirectPage from '../features/welcome/RedirectPage';
 import history from '../history';
 import Navbar from './Navbar';
 
@@ -24,7 +24,7 @@ const Routes = ({ classes }: Props) => {
       <Navbar />
       <Paper className={classes.root}>
         <Switch>
-          <Route path="/" exact component={WelcomePage} />
+          <Route path="/" exact component={RedirectPage} />
           <Route path="/terms" exact component={TermsPage} />
           <Route path="/terms/new" component={AddTermPage} />
           <Route path="/terms/:termId" exact component={TermPage} />

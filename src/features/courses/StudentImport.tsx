@@ -1,15 +1,14 @@
 import { Button, Box, Card, Paper, CardContent, Grid, TextField, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-// import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Loading from '../../components/Loading';
-// import { useCourse, useTerm } from '../../utils/selectors';
 import { Term } from '../terms/termSlice';
 import { Course } from './courseSlice';
 import papaparse from 'papaparse';
 import { parse, isValid } from 'date-fns';
 import { formatDate, formatSex } from '../../utils/formatter';
-import { StudentBase } from './studentSlice';
+import { StudentBase, createStudentsForCourse } from './studentSlice';
 
 interface Props {
   term: Term;
@@ -54,12 +53,23 @@ export default (props: Props) => {
   const [csvData, setCsvData] = useState(sampleCSV);
   const [formGroup, setFormGroup] = useState('');
   const [students, setStudents] = useState(Array<StudentBase>());
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const classes = useStyles();
 
-  // const parseCsv = (event: React.ChangeEvent<HTMLInputElement>) => {
-  // setCsvData(event.target.value);
+  const handleImport = async () => {
+    const result = await dispatch(createStudentsForCourse(term.id, course.id, students)
+    );
+    console.log('result', result);
+  }
+
   const parseCsv = () => {
+    const yearResult = formGroup.match(/^(\d+)\w*/);
+    if (!yearResult) {
+      setStudents([]);
+      return;
+    }
+    const year = Number(yearResult[1]);
+
     const result = papaparse.parse(csvData.trim(), {
       header: true,
       skipEmptyLines: true,
@@ -82,7 +92,8 @@ export default (props: Props) => {
       },
     });
 
-    const newStudents = result.data.map(s => ({ ...s, formGroup }));
+    const newStudents = result.data.map(s => ({ ...s, formGroup, year }));
+    newStudents.forEach(s => { delete s.undefined });
     setStudents(newStudents);
   };
 
@@ -121,7 +132,7 @@ export default (props: Props) => {
           variant="outlined"
           onChange={e => setFormGroup(e.target.value)}
         />
-        <Button variant="contained" color="primary" className={classes.button} disabled={formGroup === ''}>
+        <Button variant="contained" color="primary" className={classes.button} onClick={handleImport} disabled={formGroup === ''}>
           Importieren
         </Button>
       </div>

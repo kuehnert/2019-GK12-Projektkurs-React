@@ -1,35 +1,59 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  CssBaseline,
-  FormControlLabel,
-  Grid,
-  Link,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import { Avatar, Box, Button, Container, CssBaseline, FormHelperText, Grid, Link, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { FormHelperText } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { Field, Form, Formik } from 'formik';
+import { ErrorMessage, Field, Form, Formik, FormikErrors } from 'formik';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
+import { RootState } from '../../app/rootReducer';
 import FTextField from '../../components/FTextField';
 import history from '../../history';
-import { login, LoginValues } from './teacherSlice';
-import { RootState } from '../../app/rootReducer';
+import { signUp, SignUpValues } from './teacherSlice';
 
-const LoginPage: React.FC = () => {
+const initialValues = {
+  firstname: '',
+  lastname: '',
+  schoolName: '',
+  state: '',
+  email: '',
+  password: '',
+};
+
+const validate = (values: SignUpValues): void | object | Promise<FormikErrors<SignUpValues>> => {
+  const errors: { [key: string]: string } = {};
+
+  if (!values.firstname) {
+    errors.firstname = 'Notwendig';
+  }
+
+  if (!values.lastname) {
+    errors.lastname = 'Notwendig';
+  }
+
+  if (!values.schoolName) {
+    errors.schoolName = 'Notwendig';
+  }
+
+  if (!values.state) {
+    errors.state = 'Notwendig';
+  }
+
+  if (!values.email) {
+    errors.email = 'Notwendig';
+  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+    errors.email = 'Ungültige E-Mail-Adresse';
+  }
+
+  return errors;
+};
+
+export default () => {
   const { error } = useSelector((state: RootState) => state.teachers);
   const dispatch = useDispatch();
   const classes = useStyles();
 
-  const handleSubmit = async (values: LoginValues) => {
-    await dispatch(login(values));
+  const handleSubmit = async (values: SignUpValues) => {
+    await dispatch(signUp(values));
     history.push('/');
   };
 
@@ -41,18 +65,27 @@ const LoginPage: React.FC = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Anmelden
+          Bei Sokrates registrieren
         </Typography>
 
         {error && <FormHelperText>{error}</FormHelperText>}
 
-        <Formik onSubmit={handleSubmit} initialValues={{ email: '', password: '' }}>
+        <Formik onSubmit={handleSubmit} initialValues={initialValues} validate={validate}>
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
             <Form className={classes.form}>
+              <Field name="firstname" label="Vorname" placeholder="Wilhelm" component={FTextField} />
+              <ErrorMessage name="firstname" />
+
+              <Field name="lastname" label="Nachname" placeholder="Lempel" component={FTextField} />
+              <Field
+                name="schoolName"
+                label="Name der Schule"
+                placeholder="Wilhelm-Busch-Gymnasium Springe"
+                component={FTextField}
+              />
+              <Field name="state" label="Bundesland" placeholder="Lempel" component={FTextField} />
               <Field name="email" label="E-Mail" placeholder="lehrer.lempel@busch-schule.de" component={FTextField} />
               <Field name="password" label="Passwort" type="password" component={FTextField} />
-
-              {/* <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Angemeldet bleiben" /> */}
 
               <Button
                 type="submit"
@@ -69,13 +102,13 @@ const LoginPage: React.FC = () => {
 
         <Grid container>
           <Grid item xs>
-            <Link component={RouterLink} to="#" variant="body2">
+          <Link component={RouterLink} to="#" variant="body2">
               Passwort vergessen?
             </Link>
           </Grid>
           <Grid item>
-            <Link component={RouterLink} to="/signup" variant="body2">
-              Kein Konto? Hier registrieren.
+            <Link component={RouterLink} to="/login" variant="body2">
+              Schon ein Konto? Hier anmelden.
             </Link>
           </Grid>
         </Grid>
@@ -90,8 +123,7 @@ const LoginPage: React.FC = () => {
 function MadeWithLove() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Entwickelt von '}
-      {'Matthias Kühnert'}
+      Entwickelt in Leverkusen von Matthias Kühnert
     </Typography>
   );
 }
@@ -122,5 +154,3 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-export default LoginPage;
