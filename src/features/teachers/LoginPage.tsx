@@ -1,16 +1,4 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  CssBaseline,
-  FormControlLabel,
-  Grid,
-  Link,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import { Avatar, Box, Button, Container, CssBaseline, Grid, Link, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { FormHelperText } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';

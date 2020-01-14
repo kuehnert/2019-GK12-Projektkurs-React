@@ -73,7 +73,7 @@ export default (props: Props) => {
     const result = papaparse.parse(csvData.trim(), {
       header: true,
       skipEmptyLines: true,
-      transformHeader: header => headerMap[header],
+      transformHeader: header => headerMap[header.trim()],
       transform: (value, header) => {
         switch (header) {
           case 'dob':
@@ -81,13 +81,13 @@ export default (props: Props) => {
             return isValid(date) ? date : null;
 
           case 'email':
-            return value.toLowerCase();
+            return value.trim().toLowerCase();
 
           case 'sex':
-            return value === 'female' ? 0 : 1;
+            return value.trim() === 'female' ? 0 : 1;
 
           default:
-            return value;
+            return value.trim();
         }
       },
     });

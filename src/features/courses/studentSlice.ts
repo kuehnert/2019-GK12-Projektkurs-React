@@ -44,7 +44,7 @@ export const studentSlice = createSlice({
     },
     createStudentsForCourseSuccess(state, action: PayloadAction<{ termId: string; students: Student[] }>) {
       const { termId, students } = action.payload;
-      state.students[termId].concat(students);
+      state.students[termId] = (state.students[termId] || []).concat(students);
     },
     createStudentsForCourseFailed(state, action: PayloadAction<string>) {
       state.error = action.payload;
@@ -52,23 +52,23 @@ export const studentSlice = createSlice({
   },
 });
 
-export const { createStudentsForCourseFailed, createStudentsForCourseSuccess } = studentSlice.actions;
+export const { createStudentsForCourseFailed, createStudentsForCourseSuccess, getTermStudentsFailed, getTermStudentsSuccess } = studentSlice.actions;
 
 export default studentSlice.reducer;
 
 export const getTermStudents = (termId: string): AppThunk => async dispatch => {
   let students;
+
   try {
     const teacherId = getTeacherId();
     const result = await sokratesApi.get(`/teachers/${teacherId}/terms/${termId}/students`, { headers: authHeader() });
-    console.log(result);
     students = result.data;
   } catch (error) {
-    dispatch(createStudentsForCourseFailed(error.toString()));
+    dispatch(getTermStudentsFailed(error.toString()));
     return;
   }
 
-  dispatch(createStudentsForCourseSuccess({ termId, students }));
+  dispatch(getTermStudentsSuccess({ termId, students }));
 };
 
 export const createStudentsForCourse = (
@@ -77,6 +77,7 @@ export const createStudentsForCourse = (
   values: StudentBase[]
 ): AppThunk => async dispatch => {
   let students;
+
   try {
     const teacherId = getTeacherId();
     const result = await sokratesApi.post(`/teachers/${teacherId}/terms/${termId}/students`, values, {

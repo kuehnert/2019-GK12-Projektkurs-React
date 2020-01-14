@@ -8,7 +8,8 @@ import history from '../../history';
 import { useTerm } from '../../utils/selectors';
 import TermForm from './TermForm';
 import { getTerm, Term, TermBase, updateTerm } from './termSlice';
-import { getTermStudents } from "../courses/studentSlice";
+import { getTermStudents } from '../courses/studentSlice';
+import StudentTable from './StudentTable';
 
 interface MatchParams {
   termId: string;
@@ -45,10 +46,7 @@ export default (props: RouteComponentProps<MatchParams>) => {
         <TermForm handleSubmit={(values: TermBase) => handleSubmit(values)} initialValues={term} />
       </Paper>
 
-      <Paper className={classes.paper}>
-        <Typography variant="h4">Schülerinnen und Schüler</Typography>
-
-      </Paper>
+      <StudentTable termId={termId} />
     </div>
   );
 };
