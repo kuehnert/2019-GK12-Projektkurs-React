@@ -45,8 +45,8 @@ class TermsPage extends Component<Props> {
           history.push(`/terms/${term.id}`);
         }}>
         <TableCell>{term.name}</TableCell>
-        <TableCell>{formatDate(term.start)}</TableCell>
-        <TableCell>{formatDate(term.end)}</TableCell>
+        <TableCell>{formatDate(term.start, 'long')}</TableCell>
+        <TableCell>{formatDate(term.end, 'long')}</TableCell>
         <TableCell>
           <IconButton color="primary" onClick={e => this.editTerm(e, term.id)}>
             <EditIcon />
@@ -68,7 +68,7 @@ class TermsPage extends Component<Props> {
 
     return (
       <div>
-        <Typography variant="h2">Deine Halbjahre, {teacher.firstname}!</Typography>
+        <Typography variant="h3">Halbjahre</Typography>
 
         <Table className={classes.table}>
           <TableHead>
@@ -116,7 +116,9 @@ const styles = (theme: Theme) =>
     },
     buttons: {},
     fab: {
-      margin: '20px',
+      position: 'absolute',
+      right: theme.spacing(2),
+      bottom: theme.spacing(2),
     },
   });
 

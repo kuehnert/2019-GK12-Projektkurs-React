@@ -1,4 +1,18 @@
-import { Avatar, Box, Button, Container, CssBaseline, FormHelperText, Grid, Link, Theme, Typography } from '@material-ui/core';
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  CssBaseline,
+  FormControl,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  Link,
+  MenuItem,
+  Theme,
+  Typography,
+} from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { ErrorMessage, Field, Form, Formik, FormikErrors } from 'formik';
@@ -6,6 +20,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import { RootState } from '../../app/rootReducer';
+import FSelect from '../../components/FSelect';
 import FTextField from '../../components/FTextField';
 import history from '../../history';
 import { signUp, SignUpValues } from './teacherSlice';
@@ -18,6 +33,25 @@ const initialValues = {
   email: '',
   password: '',
 };
+
+const states = [
+  'Baden-Württemberg',
+  'Bayern',
+  'Berlin',
+  'Brandenburg',
+  'Bremen',
+  'Hamburg',
+  'Hessen',
+  'Mecklenburg-Vorpommern',
+  'Niedersachsen',
+  'Nordrhein-Westfalen',
+  'Rheinland-Pfalz',
+  'Saarland',
+  'Sachsen-Anhalt',
+  'Sachsen',
+  'Schleswig-Holstein',
+  'Thüringen  ',
+];
 
 const validate = (values: SignUpValues): void | object | Promise<FormikErrors<SignUpValues>> => {
   const errors: { [key: string]: string } = {};
@@ -83,7 +117,18 @@ export default () => {
                 placeholder="Wilhelm-Busch-Gymnasium Springe"
                 component={FTextField}
               />
-              <Field name="state" label="Bundesland" placeholder="Lempel" component={FTextField} />
+
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Bundesland</InputLabel>
+                <Field name="state" placeholder="Nordrhein-Westfalen" fullWidth margin="dense" component={FSelect}>
+                  {states.map((i: string) => (
+                    <MenuItem value={i} key={i}>
+                      {i}
+                    </MenuItem>
+                  ))}
+                </Field>
+              </FormControl>
+
               <Field name="email" label="E-Mail" placeholder="lehrer.lempel@busch-schule.de" component={FTextField} />
               <Field name="password" label="Passwort" type="password" component={FTextField} />
 
@@ -102,7 +147,7 @@ export default () => {
 
         <Grid container>
           <Grid item xs>
-          <Link component={RouterLink} to="#" variant="body2">
+            <Link component={RouterLink} to="#" variant="body2">
               Passwort vergessen?
             </Link>
           </Grid>
