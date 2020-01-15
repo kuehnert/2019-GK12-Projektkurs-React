@@ -12,7 +12,7 @@ import TermPage from '../features/terms/TermPage';
 import TermsPage from '../features/terms/TermsPage';
 import RedirectPage from '../features/welcome/RedirectPage';
 import history from '../history';
-import Navbar from './Navbar';
+import AppBar from '../components/AppBar';
 
 interface Props {
   classes: any;
@@ -21,7 +21,7 @@ interface Props {
 const Routes = ({ classes }: Props) => {
   return (
     <Router history={history}>
-      <Navbar />
+      <AppBar />
       <Paper className={classes.root}>
         <Switch>
           <Route path="/" exact component={RedirectPage} />
