@@ -1,29 +1,30 @@
+import { indigo, orange } from '@material-ui/core/colors';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { Route, Router, Switch } from 'react-router-dom';
-import LoginPage from '../features/teachers/LoginPage';
-import SignUpPage from '../features/teachers/SignUpPage';
-import WelcomePage from '../features/welcome/WelcomePage';
-import history from '../history';
-import { RootState } from './rootReducer';
 import Routes from './Routes';
 
-const App: React.FC = () => {
-  const { isLoggedIn } = useSelector((state: RootState) => state.teachers);
-
-  if (!isLoggedIn) {
-    return (
-      <Router history={history}>
-        <Switch>
-          <Route path="/" exact component={WelcomePage} />
-          <Route path="/signup" exact component={SignUpPage} />
-          <Route path="/login" exact component={LoginPage} />
-        </Switch>
-      </Router>
-    );
-  } else {
-    return <Routes />;
-  }
+const App: React.FC = (props: any) => {
+  return (
+    <MuiThemeProvider theme={theme}>
+      <Routes />
+    </MuiThemeProvider>
+  );
 };
+
+const theme = createMuiTheme({
+  spacing: 8,
+  palette: {
+    primary: indigo,
+    secondary: orange,
+    background: {
+      paper: '#eee',
+      default: '#ccc',
+    },
+  },
+  typography: {
+    htmlFontSize: 14,
+    fontSize: 12,
+  },
+});
 
 export default App;

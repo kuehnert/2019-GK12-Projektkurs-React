@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     fab: {
-      position: 'absolute',
+      position: 'fixed',
       bottom: theme.spacing(3),
       right: theme.spacing(3),
     },

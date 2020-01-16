@@ -1,53 +1,40 @@
-import { Paper, Theme } from '@material-ui/core';
-import { createStyles, withStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
 import NotFoundPage from '../components/NotFoundPage';
+import ProtectedRoute from '../components/ProtectedRoute';
 import CoursePage from '../features/courses/CoursePage';
 import EditCoursePage from '../features/courses/EditCoursePage';
+import LoginPage from '../features/teachers/LoginPage';
+import SignUpPage from '../features/teachers/SignUpPage';
 import AddTermPage from '../features/terms/AddTermPage';
 import EditTermPage from '../features/terms/EditTermPage';
-import EditTimetablePage from "../features/terms/EditTimetablePage";
+import EditTimetablePage from '../features/terms/EditTimetablePage';
 import TermPage from '../features/terms/TermPage';
 import TermsPage from '../features/terms/TermsPage';
-import RedirectPage from '../features/welcome/RedirectPage';
+import WelcomePage from '../features/welcome/WelcomePage';
 import history from '../history';
-import AppBar from '../components/AppBar';
+import Layout from '../app/Layout';
 
-interface Props {
-  classes: any;
-}
-
-const Routes = ({ classes }: Props) => {
+export default () => {
   return (
     <Router history={history}>
-      <AppBar />
-      <Paper className={classes.root}>
-        <Switch>
-          <Route path="/" exact component={RedirectPage} />
-          <Route path="/terms" exact component={TermsPage} />
-          <Route path="/terms/new" component={AddTermPage} />
-          <Route path="/terms/:termId" exact component={TermPage} />
-          <Route path="/terms/:termId/edit" excat component={EditTermPage} />
-          <Route path="/terms/:termId/edit_timetable" excat component={EditTimetablePage} />
-          <Route path="/terms/:termId/courses/:courseId/edit" component={EditCoursePage} />
-          <Route path="/terms/:termId/courses/:courseId" component={CoursePage} />
-          <Route path="*" component={NotFoundPage} status={404} />
-        </Switch>
-      </Paper>
+      <Switch>
+        <Route path="/" exact component={WelcomePage} />
+        <Route path="/signup" exact component={SignUpPage} />
+        <Route path="/login" exact component={LoginPage} />
+
+        <Layout>
+          <ProtectedRoute exact path="/terms" component={TermsPage} />
+          <ProtectedRoute exact path="/terms/new" component={AddTermPage} />
+          <ProtectedRoute exact path="/terms/:termId" component={TermPage} />
+          <ProtectedRoute exact path="/terms/:termId/edit" component={EditTermPage} />
+          <ProtectedRoute exact path="/terms/:termId/edit_timetable" component={EditTimetablePage} />
+          <ProtectedRoute exact path="/terms/:termId/courses/:courseId/edit" component={EditCoursePage} />
+          <ProtectedRoute exact path="/terms/:termId/courses/:courseId" component={CoursePage} />
+        </Layout>
+
+        <Route path="*" component={NotFoundPage} status={404} />
+      </Switch>
     </Router>
   );
 };
-
-const styles = (theme: Theme) =>
-  createStyles({
-    root: {
-      width: '95%',
-      marginTop: theme.spacing(3),
-      overflowX: 'auto',
-      margin: 'auto',
-      padding: 20,
-    },
-  });
-
-export default withStyles(styles)(Routes);

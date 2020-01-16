@@ -14,7 +14,7 @@ interface Props {
   handleClose: () => void;
 }
 
-const CourseDialog = (props: Props) => {
+const CourseDialog: React.FC<Props> = (props: Props) => {
   const dispatch = useDispatch();
 
   const handleSubmit = (values: Course, actions: any) => {
