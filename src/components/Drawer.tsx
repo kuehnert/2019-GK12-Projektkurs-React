@@ -8,10 +8,12 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import React from 'react';
 import history from '../history';
+import { useTermParams } from "../utils/selectors";
 
 export default () => {
   const classes = useStyles();
-  const termId = null;
+  const { termId, courseId } = useTermParams();
+  console.log('termId, courseId', termId, courseId);
 
   return (
     <Drawer
