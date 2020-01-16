@@ -8,6 +8,11 @@ export interface Student extends StudentBase {
   id: string;
 }
 
+export interface ImportStudent extends StudentBase {
+  termDuplicate: boolean;
+  courseDuplicate: boolean;
+}
+
 export interface StudentBase {
   firstname: string;
   lastname: string;

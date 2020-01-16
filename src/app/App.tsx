@@ -18,7 +18,7 @@ const theme = createMuiTheme({
     secondary: orange,
     background: {
       paper: '#eee',
-      default: '#ccc',
+      default: '#ddd',
     },
   },
   typography: {

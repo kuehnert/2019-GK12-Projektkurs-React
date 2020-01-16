@@ -1,13 +1,12 @@
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../app/rootReducer';
 import { Course } from '../features/courses/courseSlice';
 import history from '../history';
 import { useTerm, useTermParams } from '../utils/selectors';
-import { BookOutlined as BookIcon, Event as EventIcon } from '@material-ui/icons';
+import { BookOutlined as BookIcon, Event as EventIcon, List as ListIcon } from '@material-ui/icons';
 
 export default () => {
   const classes = useStyles();
@@ -22,7 +21,7 @@ export default () => {
         button
         selected={c.id === courseId}
         onClick={() => history.push(`/terms/${termId}/courses/${c.id}`)}>
-        <ListItemIcon>
+        <ListItemIcon className={classes.icon}>
           <BookIcon />
         </ListItemIcon>
         <ListItemText primary={c.name} />
@@ -34,7 +33,7 @@ export default () => {
     return (
       <>
         <ListItem button key="timetable" onClick={() => history.push(`/terms/${termId}`)}>
-          <ListItemIcon>
+          <ListItemIcon className={classes.icon}>
             <EventIcon />
           </ListItemIcon>
           <ListItemText primary={term?.name} />
@@ -57,8 +56,8 @@ export default () => {
       <div className={classes.toolbar} />
       <List>
         <ListItem button key="terms" onClick={() => history.push('/terms')}>
-          <ListItemIcon>
-            <InboxIcon />
+          <ListItemIcon className={classes.icon}>
+            <ListIcon />
           </ListItemIcon>
           <ListItemText primary="Halbjahre" />
         </ListItem>
@@ -80,6 +79,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     drawerPaper: {
       width: drawerWidth,
+    },
+    icon: {
+      minWidth: '36px',
     },
     toolbar: theme.mixins.toolbar,
   })

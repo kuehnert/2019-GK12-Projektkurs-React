@@ -1,14 +1,15 @@
-import { Button, Box, Card, Paper, CardContent, Grid, TextField, Theme, Typography } from '@material-ui/core';
+import { Box, Button, Card, CardContent, Grid, Paper, TextField, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { isValid, parse } from 'date-fns';
+import papaparse from 'papaparse';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
+import { formatDate, formatSex } from '../../utils/formatter';
 import { Term } from '../terms/termSlice';
 import { Course } from './courseSlice';
-import papaparse from 'papaparse';
-import { parse, isValid } from 'date-fns';
-import { formatDate, formatSex } from '../../utils/formatter';
-import { StudentBase, createStudentsForCourse } from './studentSlice';
+import { getTermStudents, createStudentsForCourse, StudentBase, ImportStudent } from './studentSlice';
 
 interface Props {
   term: Term;
@@ -25,6 +26,9 @@ const headerMap: { [key: string]: string } = {
   Geburtstag: 'dob',
   'E-Mail': 'email',
 };
+
+const termStudentColor = '#aaa';
+const courseStudentColor = '#ccc';
 
 const sampleCSV = `Nr.,Nachname,Vorname,Geschlecht,Belegung,Telefon,Alter,Geburtstag,E-Mail
 1,Baller,Isabel,female,m,02174-6692347,15,25.01.2004,ISABEL@GMX.DE
@@ -48,24 +52,28 @@ const sampleCSV = `Nr.,Nachname,Vorname,Geschlecht,Belegung,Telefon,Alter,Geburt
 19,Wieser,Leon,male,s,02173-2949234,16,08.06.2003,la@gmx.de
 20,Wisser,Simon,male,s,0214-203242482,16,03.07.2003,simon@t-online.de`;
 
+const studentEquals = (a: StudentBase, b: StudentBase) => {
+  return a.lastname === b.lastname && a.firstname === b.firstname && a.year === b.year;
+};
+
 export default (props: Props) => {
   const { term, course } = props;
   const [csvData, setCsvData] = useState(sampleCSV);
-  const [formGroup, setFormGroup] = useState('');
-  const [students, setStudents] = useState(Array<StudentBase>());
+  const [formGroup, setFormGroup] = useState(course.name.replace(/ .+$/, ''));
+  const [newStudents, setNewStudents] = useState(Array<ImportStudent>());
+  const termStudents = useSelector((state: RootState) => state.students.students[term.id]);
   const dispatch = useDispatch();
   const classes = useStyles();
 
   const handleImport = async () => {
-    const result = await dispatch(createStudentsForCourse(term.id, course.id, students)
-    );
+    const result = await dispatch(createStudentsForCourse(term.id, course.id, newStudents));
     console.log('result', result);
-  }
+  };
 
   const parseCsv = () => {
     const yearResult = formGroup.match(/^(\d+)\w*/);
     if (!yearResult) {
-      setStudents([]);
+      setNewStudents([]);
       return;
     }
     const year = Number(yearResult[1]);
@@ -93,14 +101,24 @@ export default (props: Props) => {
     });
 
     const newStudents = result.data.map(s => ({ ...s, formGroup, year }));
-    newStudents.forEach(s => { delete s.undefined });
-    setStudents(newStudents);
+    newStudents.forEach(s => {
+      delete s.undefined;
+      if (termStudents.find(t => studentEquals(t, s))) {
+        s.termDuplicate = true;
+      }
+      return s;
+    });
+    setNewStudents(newStudents);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => parseCsv(), [csvData, formGroup]);
 
-  if (term == null || course == null) {
+  useEffect(() => {
+    dispatch(getTermStudents(term.id));
+  }, [dispatch, term.id]);
+
+  if (term == null || course == null || termStudents == null) {
     return <Loading />;
   }
 
@@ -132,27 +150,32 @@ export default (props: Props) => {
           variant="outlined"
           onChange={e => setFormGroup(e.target.value)}
         />
-        <Button variant="contained" color="primary" className={classes.button} onClick={handleImport} disabled={formGroup === ''}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          onClick={handleImport}
+          disabled={formGroup === ''}>
           Importieren
         </Button>
       </div>
 
       <Paper className={classes.paper}>
         <Grid container spacing={1}>
-          {students.map((s, i) => (
+          {newStudents.map((s, i) => (
             <Grid item xs={3} key={`${s.lastname},${s.firstname}`} className={classes.card}>
-              <Card className={classes.card}>
+              <Card className={classes.card} style={{ background: s.termDuplicate ? termStudentColor : '#fff' }}>
                 <CardContent className={classes.cardContent}>
-                  <Typography variant="h6" component="h5" color="primary">
+                  <Typography variant="h6" component="h6" color="primary">
                     {s.lastname}, {s.firstname} {formatSex(s.sex)}
                   </Typography>
-                  <Typography variant="body1" component="p" color="secondary" className={classes.cardNumber}>
+                  <Typography variant="body2" component="p" color="secondary" className={classes.cardNumber}>
                     {i + 1}
                   </Typography>
                   <Typography variant="body2" component="p">
                     Klasse {s.formGroup || '?'}, *{formatDate(s.dob, 'long') || '?'}
                   </Typography>
-                  <Typography>
+                  <Typography variant="body2" component="p">
                     {s.phone || '?'}
                     <br />
                     {s.email || '?'}
