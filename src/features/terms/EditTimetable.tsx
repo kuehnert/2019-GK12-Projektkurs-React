@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import React from 'react';
 import Loading from '../../components/Loading';
-import Time from '../../components/Time';
+// import Time from '../../components/Time';
 import { Lesson, Period, Term } from './termSlice';
 import LessonCell from './LessonCell';
 
@@ -20,6 +20,7 @@ const useStyles = makeStyles(({ palette }: Theme) =>
       textAlign: 'center',
       border: '1px solid rgba(100, 100, 100, 1)',
       fontSize: '0.7rem',
+      width: '10%',
     },
     periodName: {
       fontSize: '2rem',
@@ -29,14 +30,13 @@ const useStyles = makeStyles(({ palette }: Theme) =>
       background: palette.secondary.main,
       textAlign: 'center',
       border: '1px solid rgba(100, 100, 100, 1)',
-      width: '15%',
+      width: '10%',
     },
   })
 );
 
 export default function EditTimetable({ termId }: Props) {
   const term = useSelector((state: RootState) => state.terms.terms?.find((term: Term) => term.id === termId));
-  // const courses = useSelector((state: RootState) => state.courses.courses[termId]);
   const classes = useStyles();
 
   const renderPeriods = () => {
@@ -50,7 +50,7 @@ export default function EditTimetable({ termId }: Props) {
       <TableRow key={period.number}>
         <TableCell className={classes.period} align="center">
           <Typography variant="h6">{period.name}</Typography>
-          <Time time={period.start} />-<Time time={period.end} />
+          {/* <Time time={period.start} />-<Time time={period.end} /> */}
         </TableCell>
         {[0, 1, 2, 3, 4, 5].map(weekday => {
           const lesson = timetable[`${weekday},${period.number}`];
@@ -68,13 +68,19 @@ export default function EditTimetable({ termId }: Props) {
     <Table size="small">
       <TableHead>
         <TableRow>
-          <TableCell className={classes.header}>Stunde</TableCell>
-          <TableCell className={classes.header}>Montag</TableCell>
+          <TableCell className={classes.header}>Std</TableCell>
+          <TableCell className={classes.header}>Mo</TableCell>
+          <TableCell className={classes.header}>Di</TableCell>
+          <TableCell className={classes.header}>Mi</TableCell>
+          <TableCell className={classes.header}>Do</TableCell>
+          <TableCell className={classes.header}>Fr</TableCell>
+          <TableCell className={classes.header}>Sa</TableCell>
+          {/* <TableCell className={classes.header}>Montag</TableCell>
           <TableCell className={classes.header}>Dienstag</TableCell>
           <TableCell className={classes.header}>Mittwoch</TableCell>
           <TableCell className={classes.header}>Donnerstag</TableCell>
           <TableCell className={classes.header}>Freitag</TableCell>
-          <TableCell className={classes.header}>Samstag</TableCell>
+          <TableCell className={classes.header}>Samstag</TableCell> */}
         </TableRow>
       </TableHead>
       <tbody>{renderPeriods()}</tbody>

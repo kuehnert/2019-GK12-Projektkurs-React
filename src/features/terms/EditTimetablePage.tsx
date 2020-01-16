@@ -1,4 +1,4 @@
-import { Button, Grid, Theme, Typography } from '@material-ui/core';
+import { Paper, Button, Grid, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect } from 'react';
 import CourseList from '../courses/CourseList';
@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { getTerm } from './termSlice';
 import { getCourses } from '../courses/courseSlice';
 import { DndProvider } from 'react-dnd';
-import Backend from 'react-dnd-html5-backend'
+import Backend from 'react-dnd-html5-backend';
 import TrashCan from '../../components/TrashCan';
 import history from '../../history';
 
@@ -18,25 +18,21 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
-    },
-    paper: {
-      height: 140,
-      width: 100,
+      width: '100%',
     },
     control: {
-      padding: theme.spacing(2),
+      padding: theme.spacing(1),
     },
     buttons: {
       '& > *': {
-        margin: theme.spacing(1),
+        // margin: theme.spacing(1),
         marginTop: theme.spacing(2),
       },
-    }
+    },
   })
 );
 
-// TODO: What about? : React.FC<MatchParams>
-export default (props: RouteComponentProps<MatchParams>) => {
+const EditTimetablePage: React.FC<RouteComponentProps<MatchParams>> = (props) => {
   const { termId } = props.match.params;
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -49,21 +45,25 @@ export default (props: RouteComponentProps<MatchParams>) => {
     <DndProvider backend={Backend}>
       <Typography variant="h2">Stundenplan bearbeiten</Typography>
 
-      <Grid container className={classes.root} spacing={2}>
+      <Grid container className={classes.root} spacing={1}>
         <Grid item xs={9}>
           <EditTimetable termId={termId} />
+          <Paper className={classes.root}>Hello</Paper>
         </Grid>
 
         <Grid item xs={3}>
           <CourseList termId={termId} />
-
           <TrashCan />
         </Grid>
       </Grid>
 
       <div className={classes.buttons}>
-        <Button variant="contained" color="primary" onClick={() => history.goBack()}>Zurück</Button>
+        <Button variant="contained" color="primary" onClick={() => history.goBack()}>
+          Zurück
+        </Button>
       </div>
     </DndProvider>
   );
 };
+
+export default EditTimetablePage;

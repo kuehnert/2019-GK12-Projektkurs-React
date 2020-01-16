@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Box, Button, Paper, Typography, Theme } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+import history from '../../history';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/rootReducer';
 
 export default () => {
   const classes = useStyles();
+  const teacher = useSelector((state: RootState) => state.teachers.teacher);
+  useEffect(() => {
+    if (teacher != null) {
+      history.push(`/terms`);
+    }
+  }, [teacher]);
 
   return (
     <Paper className={classes.root}>
