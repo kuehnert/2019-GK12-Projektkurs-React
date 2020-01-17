@@ -9,8 +9,8 @@ import Loading from '../../components/Loading';
 import { formatDate, formatSex } from '../../utils/formatter';
 import { Term } from '../terms/termSlice';
 import { Course } from './courseSlice';
-import { getStudents, createStudents, Student, StudentBase, ImportStudent } from './studentSlice';
-import { createEnrolments } from './EnrolmentSlice';
+import { getStudents, createStudents, StudentBase, ImportStudent } from './studentSlice';
+import { createEnrolments } from './enrolmentSlice';
 
 interface Props {
   term: Term;
@@ -135,7 +135,9 @@ export default (props: Props) => {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { setFormGroup(course.name.replace(/ .+$/, '')) }, []);
+  useEffect(() => {
+    setFormGroup(course.name.replace(/ .+$/, ''));
+  }, [course]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => parseCsv(), [csvData, formGroup]);
@@ -150,9 +152,7 @@ export default (props: Props) => {
   }
 
   return (
-    <div className={classes.root}>
-      {/* <Typography variant="h4">Schülerdaten importieren</Typography> */}
-
+    <div>
       <Box className={classes.box}>
         <TextField
           id="csv-data"

@@ -4,6 +4,7 @@ import { AppThunk } from '../../app/store';
 import authHeader from '../../utils/authHeader';
 import getTeacherId from '../../utils/getTeacherId';
 import { Student } from './studentSlice';
+import { Course } from './courseSlice';
 
 export interface Enrolment extends EnrolmentBase {
   id: string;
@@ -55,10 +56,17 @@ const initialState: EnrolmentState = {
   error: null,
 };
 
-export const EnrolmentSlice = createSlice({
+export const enrolmentSlice = createSlice({
   name: 'enrolments',
   initialState,
   reducers: {
+    getEnrolmentsSuccess(state, action: PayloadAction<{ courseId: string; enrolments: Enrolment[] }>) {
+      const { courseId, enrolments } = action.payload;
+      state.enrolments[courseId] = enrolments;
+    },
+    getEnrolmentsFailed(state, action: PayloadAction<string>) {
+      state.error = action.payload;
+    },
     createEnrolmentsSuccess(state, action: PayloadAction<{ courseId: string; newEnrolments: Enrolment[] }>) {
       const { courseId, newEnrolments } = action.payload;
       let enrolments = state.enrolments[courseId] || [];
@@ -70,9 +78,34 @@ export const EnrolmentSlice = createSlice({
   },
 });
 
-export const { createEnrolmentsSuccess, createEnrolmentsFailed } = EnrolmentSlice.actions;
+export const {
+  getEnrolmentsSuccess,
+  getEnrolmentsFailed,
+  createEnrolmentsSuccess,
+  createEnrolmentsFailed,
+} = enrolmentSlice.actions;
 
-export default EnrolmentSlice.reducer;
+export default enrolmentSlice.reducer;
+
+export const getEnrolments = (course: Course): AppThunk => async dispatch => {
+  let enrolments = [];
+
+  try {
+    const teacherId = getTeacherId();
+    const result = await sokratesApi.get(
+      `/teachers/${teacherId}/terms/${course.termId}/courses/${course.id}/enrolments`,
+      {
+        headers: authHeader(),
+      }
+    );
+    enrolments = result.data;
+  } catch (error) {
+    dispatch(getEnrolmentsFailed(error.toString()));
+    return;
+  }
+
+  dispatch(getEnrolmentsSuccess({ courseId: course.id, enrolments }));
+};
 
 export const createEnrolments = (termId: string, courseId: string, studentIds: string[]): AppThunk => async (
   dispatch,

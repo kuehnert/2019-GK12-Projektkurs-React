@@ -8,6 +8,7 @@ import { useCourse, useTerm } from '../../utils/selectors';
 import { getTerm } from '../terms/termSlice';
 import { getCourses } from './courseSlice';
 import StudentImport from './StudentImport';
+import CourseEnroler from "./CourseEnroler";
 
 interface MatchParams {
   termId: string;
@@ -49,7 +50,7 @@ export default (props: RouteComponentProps<MatchParams>) => {
   const term = useTerm(termId);
   const course = useCourse(termId, courseId);
   const classes = useStyles();
-  const [value, setValue] = React.useState(3);
+  const [value, setValue] = React.useState(2);
 
   useEffect(() => {
     dispatch(getTerm(termId));
@@ -92,7 +93,7 @@ export default (props: RouteComponentProps<MatchParams>) => {
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        Item Two
+        <CourseEnroler term={term} course={course} />
       </TabPanel>
 
       <TabPanel value={value} index={3}>
