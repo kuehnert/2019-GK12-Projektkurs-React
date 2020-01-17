@@ -22,11 +22,23 @@ import { Term } from '../terms/termSlice';
 import { Course } from './courseSlice';
 import { Enrolment, getEnrolments } from './enrolmentSlice';
 import { Student, getStudents } from './studentSlice';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface Props {
   term: Term;
   course: Course;
 }
+
+const move = (source: any, destination: any, droppableSource: any, droppableDestination: any) => {
+  // const sourceClone = Array.from(source);
+  // const destClone = Array.from(destination);
+  // const [removed] = sourceClone.splice(droppableSource.index, 1);
+  // destClone.splice(droppableDestination.index, 0, removed);
+  // const result = {};
+  // result[droppableSource.droppableId] = sourceClone;
+  // result[droppableDestination.droppableId] = destClone;
+  // return result;
+};
 
 const StudentEnrol: React.FC<Props> = props => {
   const dispatch = useDispatch();
@@ -73,69 +85,107 @@ const StudentEnrol: React.FC<Props> = props => {
     return <Loading />;
   }
 
+  const onDragEnd = (result: any) => {
+    const { source, destination } = result;
+
+    // dropped outside the list
+    if (!destination) {
+      return;
+    }
+
+    if (source.droppableId === destination.droppableId) {
+      if (source.droppableId === 'droppable2') {
+      }
+    } else {
+    }
+  };
+
   return (
     <div className="root">
-      <Grid container spacing={2} justify="space-around" alignItems="stretch" className={classes.grid}>
-        <Grid item className={classes.gridItem}>
-          <Typography variant="h6">Schüler im Halbjahr</Typography>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Grid container spacing={2} justify="space-around" alignItems="stretch" className={classes.grid}>
+          <Grid item className={classes.gridItem}>
+            <Typography variant="h6">Schüler im Halbjahr</Typography>
 
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Klasse</InputLabel>
-            <Select
-              name="formGroup"
-              fullWidth
-              margin="dense"
-              value={selectedForm}
-              onChange={(e: React.ChangeEvent<{ value: unknown }>) => setSelectedForm(e.target.value as string)}>
-              {formGroups.map((i: string) => (
-                <MenuItem value={i} key={i}>
-                  {i}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Klasse</InputLabel>
+              <Select
+                name="formGroup"
+                fullWidth
+                margin="dense"
+                value={selectedForm}
+                onChange={(e: React.ChangeEvent<{ value: unknown }>) => setSelectedForm(e.target.value as string)}>
+                {formGroups.map((i: string) => (
+                  <MenuItem value={i} key={i}>
+                    {i}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-          <Paper className={classes.paper}>
-            <List dense component="div" role="list" className={classes.list}>
-              {remaining.map(ts => (
-                <ListItem key={ts.id}>
-                  <ListItemIcon>
-                    <PersonIcon />
-                  </ListItemIcon>
-                  <ListItemText>
-                    {ts.lastname}, {ts.firstname} ({ts.formGroup})
-                  </ListItemText>
-                </ListItem>
-              ))}
-            </List>
-          </Paper>
+            <Paper className={classes.paper}>
+              <Droppable droppableId="drop-students">
+                {(provided, snapshot) => (
+                  <List dense component="div" role="list" className={classes.list} ref={provided.innerRef}>
+                    {remaining.map(ts => (
+                      <Draggable key={ts.id} draggableId={ts.id} index={0}>
+                        {(provided, snapshot) => (
+                          <ListItem ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <ListItemIcon>
+                              <PersonIcon />
+                            </ListItemIcon>
+                            <ListItemText>
+                              {ts.lastname}, {ts.firstname} ({ts.formGroup})
+                            </ListItemText>
+                          </ListItem>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </List>
+                )}
+              </Droppable>
+            </Paper>
+          </Grid>
+
+          <Grid item className={classes.gridItem}>
+            <Typography variant="h6">Schüler im Kurs</Typography>
+            <Paper className={classes.paper}>
+              <Droppable droppableId="drop-enrolments">
+                {(provided, snapshot) => (
+                  <List dense component="div" role="list" className={classes.list} ref={provided.innerRef}>
+                    {enrolments.map(e => {
+                      const s = termStudents.find(ts => ts.id === e.studentId);
+                      if (s == null) {
+                        return null;
+                      }
+
+                      return (
+                        <Draggable key={e.id} draggableId={e.id} index={0}>
+                          {(provided, snapshot) => (
+                            <ListItem
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}>
+                              <ListItemIcon>
+                                <PersonIcon />
+                              </ListItemIcon>
+                              <ListItemText>
+                                {s.lastname}, {s.firstname} ({s.formGroup})
+                              </ListItemText>
+                            </ListItem>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                    {provided.placeholder}
+                  </List>
+                )}
+              </Droppable>
+            </Paper>
+          </Grid>
         </Grid>
-
-        <Grid item className={classes.gridItem}>
-          <Typography variant="h6">Schüler im Kurs</Typography>
-          <Paper className={classes.paper}>
-            <List dense component="div" role="list" className={classes.list}>
-              {enrolments.map(e => {
-                const s = termStudents.find(ts => ts.id === e.studentId);
-                if (s == null) {
-                  return null;
-                }
-
-                return (
-                  <ListItem key={e.id}>
-                    <ListItemIcon>
-                      <PersonIcon />
-                    </ListItemIcon>
-                    <ListItemText>
-                      {s.lastname}, {s.firstname} ({s.formGroup})
-                    </ListItemText>
-                  </ListItem>
-                );
-              })}
-            </List>
-          </Paper>
-        </Grid>
-      </Grid>
+      </DragDropContext>
     </div>
   );
 };
