@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import { formatDate } from '../../utils/formatter';
-import { getTermStudents } from '../courses/studentSlice';
+import { getStudents } from '../courses/studentSlice';
 
 interface Props {
   termId: string;
@@ -22,7 +22,7 @@ export default ({ termId }: Props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getTermStudents(termId));
+    dispatch(getStudents(termId));
   }, [dispatch, termId]);
 
   return (

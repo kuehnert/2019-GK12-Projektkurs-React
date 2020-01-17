@@ -9,7 +9,8 @@ import Loading from '../../components/Loading';
 import { formatDate, formatSex } from '../../utils/formatter';
 import { Term } from '../terms/termSlice';
 import { Course } from './courseSlice';
-import { getTermStudents, createStudentsForCourse, StudentBase, ImportStudent } from './studentSlice';
+import { getStudents, createStudents, Student, StudentBase, ImportStudent } from './studentSlice';
+import { createEnrolments } from './EnrolmentSlice';
 
 interface Props {
   term: Term;
@@ -28,7 +29,7 @@ const headerMap: { [key: string]: string } = {
 };
 
 const termStudentColor = '#aaa';
-const courseStudentColor = '#ccc';
+// const courseStudentColor = '#ccc';
 
 const sampleCSV = `Nr.,Nachname,Vorname,Geschlecht,Belegung,Telefon,Alter,Geburtstag,E-Mail
 1,Baller,Isabel,female,m,02174-6692347,15,25.01.2004,ISABEL@GMX.DE
@@ -59,25 +60,37 @@ const studentEquals = (a: StudentBase, b: StudentBase) => {
 export default (props: Props) => {
   const { term, course } = props;
   const [csvData, setCsvData] = useState(sampleCSV);
-  const [formGroup, setFormGroup] = useState(course.name.replace(/ .+$/, ''));
+  const [formGroup, setFormGroup] = useState('');
   const [newStudents, setNewStudents] = useState(Array<ImportStudent>());
+  const [existingStudentIds, setExistingStudentIds] = useState(Array<string>());
   const termStudents = useSelector((state: RootState) => state.students.students[term.id]);
   const dispatch = useDispatch();
   const classes = useStyles();
 
   const handleImport = async () => {
-    const result = await dispatch(createStudentsForCourse(term.id, course.id, newStudents));
-    console.log('result', result);
+    // const studentsToCreate = newStudents.filter(s => !s.termDuplicate);
+    if (newStudents.length > 0) {
+      console.log('Creating', newStudents.length, 'students');
+      await dispatch(createStudents(term.id, newStudents));
+    }
+
+    // const studentsToEnrol = newStudents.filter(s => !s.courseDuplicate);
+    if (existingStudentIds.length > 0) {
+      console.log('Creating', existingStudentIds.length, 'enrolments');
+      await dispatch(createEnrolments(term.id, course.id, existingStudentIds));
+    }
   };
 
   const parseCsv = () => {
     const yearResult = formGroup.match(/^(\d+)\w*/);
-    if (!yearResult) {
+
+    if (!yearResult || !termStudents) {
       setNewStudents([]);
+      setExistingStudentIds([]);
       return;
     }
-    const year = Number(yearResult[1]);
 
+    const year = Number(yearResult[1]);
     const result = papaparse.parse(csvData.trim(), {
       header: true,
       skipEmptyLines: true,
@@ -100,23 +113,37 @@ export default (props: Props) => {
       },
     });
 
-    const newStudents = result.data.map(s => ({ ...s, formGroup, year }));
-    newStudents.forEach(s => {
+    const studentData = result.data.map(s => ({ ...s, formGroup, year }));
+    const tempNew: ImportStudent[] = [];
+    const tempExisting: string[] = [];
+
+    studentData.forEach(s => {
       delete s.undefined;
-      if (termStudents.find(t => studentEquals(t, s))) {
-        s.termDuplicate = true;
+      const e = termStudents.find(t => studentEquals(t, s));
+
+      if (e) {
+        tempExisting.push(e.id);
+      } else {
+        tempNew.push(s);
       }
-      return s;
     });
-    setNewStudents(newStudents);
+
+    setNewStudents(tempNew);
+    setExistingStudentIds(tempExisting);
+    console.log('newStudents', tempNew);
+    console.log('existingStudentIds', tempExisting);
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { setFormGroup(course.name.replace(/ .+$/, '')) }, []);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => parseCsv(), [csvData, formGroup]);
 
   useEffect(() => {
-    dispatch(getTermStudents(term.id));
-  }, [dispatch, term.id]);
+    dispatch(getStudents(term.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term.id]);
 
   if (term == null || course == null || termStudents == null) {
     return <Loading />;

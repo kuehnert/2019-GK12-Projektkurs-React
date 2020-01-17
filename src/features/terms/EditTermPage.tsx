@@ -8,7 +8,7 @@ import history from '../../history';
 import { useTerm } from '../../utils/selectors';
 import TermForm from './TermForm';
 import { getTerm, Term, TermBase, updateTerm } from './termSlice';
-import { getTermStudents } from '../courses/studentSlice';
+import { getStudents } from '../courses/studentSlice';
 import StudentTable from './StudentTable';
 
 interface MatchParams {
@@ -22,7 +22,7 @@ export default (props: RouteComponentProps<MatchParams>) => {
   const classes = useStyles();
   useEffect(() => {
     dispatch(getTerm(termId));
-    dispatch(getTermStudents(termId));
+    dispatch(getStudents(termId));
   }, [dispatch, termId]);
 
   const handleSubmit = async (values: TermBase) => {
