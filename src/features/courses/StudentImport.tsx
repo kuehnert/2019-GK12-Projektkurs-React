@@ -25,33 +25,17 @@ const headerMap: { [key: string]: string } = {
   Geschlecht: 'sex',
   Telefon: 'phone',
   Geburtstag: 'dob',
+  Geburtsdatum: 'dob',
   'E-Mail': 'email',
+  EMail: 'email',
 };
 
 const termStudentColor = '#aaa';
 // const courseStudentColor = '#ccc';
 
-const sampleCSV = `Nr.,Nachname,Vorname,Geschlecht,Belegung,Telefon,Alter,Geburtstag,E-Mail
-1,Baller,Isabel,female,m,02174-6692347,15,25.01.2004,ISABEL@GMX.DE
-2,Barrer,Jonas,male,m,02175-98234,15,01.02.2004,jonas@gmail.com
-3,Bauer,Maximilian,male,s,02174-8923450,16,03.11.2003,maximilian@gmail.com
-4,Berler,Eric,male,s,02175-8843261,15,30.04.2004,oberl@t-online.de
-5,Moster,Andreas,male,m,02171-552348,15,31.05.2004,andre@gmail.com
-6,Ottilie,Emily,female,m,0172-2234600,15,07.06.2004,emil@gmail.com
-7,Passer,Simone,female,m,02171-3723443,15,04.07.2004,sim@gmail.com
-8,Pesser,Giulia,female,m,02173-223445,15,26.08.2004,giu@gpx.com
-9,Philler,Floris,male,m,02171-3943247947,15,19.09.2004,flo@gmail.com
-10,Pitter,Luisa,female,m,02171-402344,15,13.10.2004,luis@gmail.com
-11,Rösser,Alisa,female,m,02171-,15,29.11.2004,
-12,Schiffer,Alexander,male,s,0214-672349,16,25.12.2003,alex@outlook.de
-13,Schmickler,Selina,female,m,02173-1623417,17,03.01.2003,schmitz@freenet.de
-14,Straucher,Fabian,male,s,02175-166234,15,28.02.2004,fabian@web.de
-15,Tewwer,Theresa,female,m,02173-8234642,17,06.03.2002,theresa@gmail.com
-16,Thaili,Marie,female,m,,,-,kasi@gmail.com
-17,Webber,Tim,male,m,02175-459234,15,16.04.2004,tim@nrwfamily.de
-18,Weinwer,Jana,female,m,02171-4922341,16,11.05.2003,jana@gmx.de
-19,Wieser,Leon,male,s,02173-2949234,16,08.06.2003,la@gmx.de
-20,Wisser,Simon,male,s,0214-203242482,16,03.07.2003,simon@t-online.de`;
+const sampleCSV = `Nachname,Vorname,Geschlecht,Telefon,Geburtsdatum,E-Mail
+Duck,Daisy,female,02174-123456,25.01.2006,daisy.duck@disney.com
+Waschbär,Rocky,male,02175-987654,01.02.2003,rocky@raccoon.org`;
 
 const studentEquals = (a: StudentBase, b: StudentBase) => {
   return a.lastname === b.lastname && a.firstname === b.firstname && a.year === b.year;
