@@ -8,6 +8,7 @@ import { Course } from './courseSlice';
 
 export interface Enrolment extends EnrolmentBase {
   id: string;
+  termId: string;
   active: boolean;
   writesExams: boolean;
   absenceCount: number;
@@ -75,6 +76,14 @@ export const enrolmentSlice = createSlice({
     createEnrolmentsFailed(state, action: PayloadAction<string>) {
       state.error = action.payload;
     },
+    deleteEnrolmentSuccess(state, action: PayloadAction<{ courseId: string; deletedEnrolment: Enrolment }>) {
+      const { courseId, deletedEnrolment } = action.payload;
+      let enrolments = state.enrolments[courseId] || [];
+      state.enrolments[courseId] = enrolments.filter(e => e.id !== deletedEnrolment.id);
+    },
+    deleteEnrolmentFailed(state, action: PayloadAction<string>) {
+      state.error = action.payload;
+    },
   },
 });
 
@@ -83,6 +92,8 @@ export const {
   getEnrolmentsFailed,
   createEnrolmentsSuccess,
   createEnrolmentsFailed,
+  deleteEnrolmentSuccess,
+  deleteEnrolmentFailed,
 } = enrolmentSlice.actions;
 
 export default enrolmentSlice.reducer;
@@ -131,4 +142,20 @@ export const createEnrolments = (termId: string, courseId: string, studentIds: s
   }
 
   dispatch(createEnrolmentsSuccess({ courseId, newEnrolments }));
+};
+
+export const deleteEnrolment = (enrolment: Enrolment): AppThunk => async (dispatch, getState) => {
+  const teacherId = getTeacherId();
+  const { termId, courseId, id } = enrolment;
+
+  try {
+    await sokratesApi.delete(`/teachers/${teacherId}/terms/${termId}/courses/${courseId}/enrolments/${id}`, {
+      headers: authHeader(),
+    });
+  } catch (error) {
+    dispatch(deleteEnrolmentFailed(error.toString()));
+    return;
+  }
+
+  dispatch(deleteEnrolmentSuccess({ courseId, deletedEnrolment: enrolment }));
 };

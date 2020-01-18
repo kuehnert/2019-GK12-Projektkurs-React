@@ -4,7 +4,7 @@ import {
   Select,
   MenuItem,
   Typography,
-  Paper,
+  Box,
   Grid,
   List,
   ListItem,
@@ -20,7 +20,7 @@ import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import { Term } from '../terms/termSlice';
 import { Course } from './courseSlice';
-import { Enrolment, getEnrolments } from './enrolmentSlice';
+import { Enrolment, createEnrolments, deleteEnrolment, getEnrolments } from './enrolmentSlice';
 import { Student, getStudents } from './studentSlice';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -28,17 +28,6 @@ interface Props {
   term: Term;
   course: Course;
 }
-
-const move = (source: any, destination: any, droppableSource: any, droppableDestination: any) => {
-  // const sourceClone = Array.from(source);
-  // const destClone = Array.from(destination);
-  // const [removed] = sourceClone.splice(droppableSource.index, 1);
-  // destClone.splice(droppableDestination.index, 0, removed);
-  // const result = {};
-  // result[droppableSource.droppableId] = sourceClone;
-  // result[droppableDestination.droppableId] = destClone;
-  // return result;
-};
 
 const StudentEnrol: React.FC<Props> = props => {
   const dispatch = useDispatch();
@@ -52,13 +41,13 @@ const StudentEnrol: React.FC<Props> = props => {
   const [selectedForm, setSelectedForm] = useState('');
 
   useEffect(() => {
+    console.log('Initial data load...');
     dispatch(getEnrolments(course));
     dispatch(getStudents(term.id));
-  }, [dispatch, term, course]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    console.log('useEffect: new termStudents', termStudents);
-
     if (termStudents == null) {
       return;
     }
@@ -69,8 +58,6 @@ const StudentEnrol: React.FC<Props> = props => {
   }, [termStudents]);
 
   useEffect(() => {
-    console.log('useEffect: new courseStudents');
-
     if (courseEnrolments == null || termStudents == null) {
       return;
     }
@@ -87,27 +74,34 @@ const StudentEnrol: React.FC<Props> = props => {
 
   const onDragEnd = (result: any) => {
     const { source, destination } = result;
+    console.log('source', source, 'destination', destination);
 
     // dropped outside the list
     if (!destination) {
       return;
     }
 
-    if (source.droppableId === destination.droppableId) {
-      if (source.droppableId === 'droppable2') {
+    if (source.droppableId !== destination.droppableId) {
+      if (source.droppableId === 'drop-enrolments') {
+        let enrolmentToDelete = enrolments[source.index];
+        dispatch(deleteEnrolment(enrolmentToDelete));
+      } else if (source.droppableId === 'drop-students') {
+        let studentToEnrol = remaining[source.index];
+        dispatch(createEnrolments(term.id, course.id, [studentToEnrol.id]));
       }
     } else {
+      // TODO: Re-order list
     }
   };
 
   return (
-    <div className="root">
-      <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="root">
         <Grid container spacing={2} justify="space-around" alignItems="stretch" className={classes.grid}>
           <Grid item className={classes.gridItem}>
             <Typography variant="h6">Schüler im Halbjahr</Typography>
 
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" className={classes.select}>
               <InputLabel>Klasse</InputLabel>
               <Select
                 name="formGroup"
@@ -115,6 +109,7 @@ const StudentEnrol: React.FC<Props> = props => {
                 margin="dense"
                 value={selectedForm}
                 onChange={(e: React.ChangeEvent<{ value: unknown }>) => setSelectedForm(e.target.value as string)}>
+                <MenuItem value={''}>{'<Alle Klassen>'}</MenuItem>
                 {formGroups.map((i: string) => (
                   <MenuItem value={i} key={i}>
                     {i}
@@ -123,12 +118,12 @@ const StudentEnrol: React.FC<Props> = props => {
               </Select>
             </FormControl>
 
-            <Paper className={classes.paper}>
+            <Box className={classes.paper}>
               <Droppable droppableId="drop-students">
                 {(provided, snapshot) => (
-                  <List dense component="div" role="list" className={classes.list} ref={provided.innerRef}>
-                    {remaining.map(ts => (
-                      <Draggable key={ts.id} draggableId={ts.id} index={0}>
+                  <List dense component="div" role="list" ref={provided.innerRef} className={classes.list}>
+                    {remaining.map((ts, i) => (
+                      <Draggable key={ts.id} draggableId={ts.id} index={i}>
                         {(provided, snapshot) => (
                           <ListItem ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <ListItemIcon>
@@ -145,25 +140,26 @@ const StudentEnrol: React.FC<Props> = props => {
                   </List>
                 )}
               </Droppable>
-            </Paper>
+            </Box>
           </Grid>
 
           <Grid item className={classes.gridItem}>
             <Typography variant="h6">Schüler im Kurs</Typography>
-            <Paper className={classes.paper}>
+            <Box className={classes.paper}>
               <Droppable droppableId="drop-enrolments">
                 {(provided, snapshot) => (
-                  <List dense component="div" role="list" className={classes.list} ref={provided.innerRef}>
-                    {enrolments.map(e => {
+                  <List dense component="div" role="list" ref={provided.innerRef} className={classes.list}>
+                    {enrolments.map((e, i) => {
                       const s = termStudents.find(ts => ts.id === e.studentId);
                       if (s == null) {
                         return null;
                       }
 
                       return (
-                        <Draggable key={e.id} draggableId={e.id} index={0}>
+                        <Draggable key={e.id} draggableId={e.id} index={i}>
                           {(provided, snapshot) => (
                             <ListItem
+                              className={classes.listItem}
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}>
@@ -182,11 +178,11 @@ const StudentEnrol: React.FC<Props> = props => {
                   </List>
                 )}
               </Droppable>
-            </Paper>
+            </Box>
           </Grid>
         </Grid>
-      </DragDropContext>
-    </div>
+      </div>
+    </DragDropContext>
   );
 };
 
@@ -195,19 +191,26 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {},
     grid: {
       display: 'flex',
-      verticalAlign: 'top',
-      // border: '1px dotted red',
+      flexDirection: 'row',
+      flexWrap: 'nowrap',
+      justifyContent: 'space-between',
+      height: '60vh',
+      padding: '10px',
     },
     gridItem: {
-      width: '25vw',
-      // border: '1px dotted grey',
-    },
-    paper: {
-      marginTop: theme.spacing(2),
+      width: '30vw',
       overflow: 'auto',
     },
+    paper: {
+      height: '100%',
+    },
+    select: {},
     list: {
-      height: '60vh',
+      height: '100%',
+      background: '#fbfffb',
+    },
+    listItem: {
+      background: 'white',
     },
   })
 );
