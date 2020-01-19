@@ -1,9 +1,11 @@
 import React from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
+import Layout from '../app/Layout';
 import NotFoundPage from '../components/NotFoundPage';
 import ProtectedRoute from '../components/ProtectedRoute';
 import CoursePage from '../features/courses/CoursePage';
 import EditCoursePage from '../features/courses/EditCoursePage';
+import EnrolmentPage from '../features/enrolments/EnrolmentPage';
 import LoginPage from '../features/teachers/LoginPage';
 import SignUpPage from '../features/teachers/SignUpPage';
 import AddTermPage from '../features/terms/AddTermPage';
@@ -13,7 +15,6 @@ import TermPage from '../features/terms/TermPage';
 import TermsPage from '../features/terms/TermsPage';
 import WelcomePage from '../features/welcome/WelcomePage';
 import history from '../history';
-import Layout from '../app/Layout';
 
 export default () => {
   return (
@@ -31,6 +32,11 @@ export default () => {
           <ProtectedRoute exact path="/terms/:termId/edit_timetable" component={EditTimetablePage} />
           <ProtectedRoute exact path="/terms/:termId/courses/:courseId/edit" component={EditCoursePage} />
           <ProtectedRoute exact path="/terms/:termId/courses/:courseId" component={CoursePage} />
+          <ProtectedRoute
+            exact
+            path="/terms/:termId/courses/:courseId/enrolments/:enrolmentId"
+            component={EnrolmentPage}
+          />{' '}
         </Layout>
 
         <Route path="*" component={NotFoundPage} status={404} />

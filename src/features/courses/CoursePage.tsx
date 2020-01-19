@@ -1,27 +1,20 @@
-import {
-  Fab,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Theme,
-  Typography,
-  TableContainer,
-  Button,
-} from '@material-ui/core';
-import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
-import { Edit as EditIcon } from '@material-ui/icons';
-import React, { useEffect } from 'react';
+import { Button, Fab, TextField, Theme, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { ArrowBack as ArrowBackIcon, ArrowForward as ArrowForwardIcon, Edit as EditIcon } from '@material-ui/icons';
+import { addDays } from 'date-fns';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import history from '../../history';
+import { getLessons } from '../../utils/courseHelpers';
 import { useCourse, useTerm } from '../../utils/selectors';
+import { getEnrolments } from '../enrolments/enrolmentSlice';
+import EnrolmentTable from '../enrolments/EnrolmentTable';
 import { getTerm } from '../terms/termSlice';
 import { getCourses } from './courseSlice';
-import { getEnrolments } from './enrolmentSlice';
+import DatePicker from './DatePicker';
 import { getStudents } from './studentSlice';
 
 interface MatchParams {
@@ -29,18 +22,27 @@ interface MatchParams {
   courseId: string;
 }
 
-export default (props: RouteComponentProps<MatchParams>) => {
+const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
   const { termId, courseId } = props.match.params;
   const dispatch = useDispatch();
   const term = useTerm(termId);
   const course = useCourse(termId, courseId);
+  const [date, setDate] = useState<Date>(new Date());
+  const [lessons, setLessons] = useState<number>(0);
   const enrolments = useSelector((state: RootState) => state.enrolments.enrolments[courseId]);
   const students = useSelector((state: RootState) => state.students.students[termId]);
   const classes = useStyles();
 
+  const handleDateChange = (delta: number) => {
+    setDate(addDays(date, delta));
+  };
+
   useEffect(() => {
     if (term == null) {
       dispatch(getTerm(termId));
+    }
+
+    if (students == null) {
       dispatch(getStudents(termId));
     }
 
@@ -56,105 +58,57 @@ export default (props: RouteComponentProps<MatchParams>) => {
     }
   }, [course, dispatch]);
 
-  if (term == null || course == null || enrolments == null) {
+  useEffect(() => {
+    if (term == null || course == null) {
+      return;
+    }
+
+    const lessons = getLessons({ term, course, date });
+    setLessons(lessons);
+  }, [term, course, date]);
+
+  if (term == null || course == null || enrolments == null || students == null) {
     return <Loading />;
   }
 
   return (
     <div className={classes.root}>
       <Typography variant="h2">Kurs {course.name}</Typography>
+
       <Fab className={classes.fab} onClick={() => history.push(`/terms/${term.id}/courses/${courseId}/edit`)}>
         <EditIcon />
       </Fab>
 
-      <TableContainer className={classes.container}>
-        <Table size="small" stickyHeader>
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Nr.</StyledTableCell>
-              <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell>Fehlstunden (Unentschuldigt)</StyledTableCell>
-              <StyledTableCell>Fehlende Hausaufgaben</StyledTableCell>
-            </TableRow>
-          </TableHead>
+      <div color="primary" className={classes.buttons}>
+        <Button onClick={() => handleDateChange(-1)} variant="text">
+          <ArrowBackIcon />
+        </Button>
+        <DatePicker date={date} handleDateChange={(date: Date) => setDate(date)} />
+        <Button onClick={() => handleDateChange(+1)} variant="text">
+          <ArrowForwardIcon />
+        </Button>
 
-          <TableBody>
-            {enrolments.map((e, i) => {
-              const student = students[e.studentId];
+        <TextField
+          label="Stunden"
+          size="small"
+          type="number"
+          inputProps={{ min: 0 }}
+          value={lessons}
+          onChange={e => setLessons(Number(e.target.value))}
+        />
+      </div>
 
-              return (
-                <StyledTableRow key={e.id} className={classes.row}>
-                  <StyledTableCell align="right">{i + 1}</StyledTableCell>
-                  <StyledTableCell>
-                    {student.lastname}, {student.firstname}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {e.absenceCount} / {e.absenceOutstandingCount}
-                    <ColorButton variant="outlined">Heute</ColorButton>
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {e.missingHomeworkCount} / {e.missingHomeworkOutstandingCount}
-                  </StyledTableCell>
-                </StyledTableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <EnrolmentTable enrolments={enrolments} students={students} date={date} lessons={lessons} />
     </div>
   );
 };
 
-const ColorButton = withStyles((theme: Theme) => ({
-  root: {
-    textTransform: 'none',
-    minWidth: 0,
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    padding: theme.spacing(0),
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    color: theme.palette.primary.main,
-    fontSize: '1rem',
-
-    '&:hover': {
-      color: theme.palette.primary.contrastText,
-      backgroundColor: theme.palette.primary.main,
-    },
-  },
-}))(Button);
-
-const StyledTableCell = withStyles((theme: Theme) =>
-  createStyles({
-    head: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    body: {
-      fontSize: 14,
-    },
-  })
-)(TableCell);
-
-const StyledTableRow = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.background.paper,
-      },
-    },
-  })
-)(TableRow);
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {},
-    container: {},
-    table: {},
-    row: {
-      '&:hover': {
-        backgroundColor: theme.palette.grey[400],
-      },
+    buttons: {
+      textAlign: 'center',
+      padding: theme.spacing(2),
     },
     fab: {
       position: 'fixed',
@@ -164,3 +118,5 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
+
+export default CoursePage;

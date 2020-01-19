@@ -10,7 +10,7 @@ import { formatDate, formatSex } from '../../utils/formatter';
 import { Term } from '../terms/termSlice';
 import { Course } from './courseSlice';
 import { getStudents, createStudents, StudentBase, ImportStudent } from './studentSlice';
-import { createEnrolments } from './enrolmentSlice';
+import { createEnrolments } from '../enrolments/enrolmentSlice';
 
 interface Props {
   term: Term;

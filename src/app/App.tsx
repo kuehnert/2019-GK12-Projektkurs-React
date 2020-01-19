@@ -1,13 +1,18 @@
+import DateFnsUtils from '@date-io/date-fns';
 import { indigo, orange } from '@material-ui/core/colors';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { de } from 'date-fns/locale';
 import React from 'react';
-import Routes from './Routes';
 import './App.css';
+import Routes from './Routes';
 
 const App: React.FC = (props: any) => {
   return (
     <MuiThemeProvider theme={theme}>
-      <Routes />
+      <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de}>
+        <Routes />
+      </MuiPickersUtilsProvider>
     </MuiThemeProvider>
   );
 };

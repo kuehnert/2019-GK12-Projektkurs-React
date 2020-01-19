@@ -1,8 +1,6 @@
-import React from 'react';
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { DatePicker } from '@material-ui/pickers';
 import { getIn } from 'formik';
-import DateFnsUtils from '@date-io/date-fns';
-import { de } from 'date-fns/locale';
+import React from 'react';
 
 const FDatePicker = (props: any) => {
   const {
@@ -15,22 +13,20 @@ const FDatePicker = (props: any) => {
   const touchedVal = getIn(touched, field.name);
   const hasError = touchedVal && errorText !== undefined;
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de}>
-      <div>
-        <DatePicker
-          label={label}
-          error={hasError}
-          helperText={hasError ? errorText : ''}
-          onChange={value => setFieldValue(field.name, value)}
-          value={field.value}
-          margin="normal"
-          fullWidth
-          format="dd.MM.yyyy"
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...other}
-        />
-      </div>
-    </MuiPickersUtilsProvider>
+    <div>
+      <DatePicker
+        label={label}
+        error={hasError}
+        helperText={hasError ? errorText : ''}
+        onChange={value => setFieldValue(field.name, value)}
+        value={field.value}
+        margin="normal"
+        fullWidth
+        format="dd.MM.yyyy"
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...other}
+      />
+    </div>
   );
 };
 

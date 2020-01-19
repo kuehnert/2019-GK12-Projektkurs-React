@@ -20,7 +20,7 @@ import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import { Term } from '../terms/termSlice';
 import { Course } from './courseSlice';
-import { Enrolment, createEnrolments, deleteEnrolment, getEnrolments } from './enrolmentSlice';
+import { Enrolment, createEnrolments, deleteEnrolment, getEnrolments } from '../enrolments/enrolmentSlice';
 import { Student, getStudents } from './studentSlice';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 

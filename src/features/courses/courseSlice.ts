@@ -3,10 +3,7 @@ import sokratesApi from '../../apis/sokratesApi';
 import { AppThunk } from '../../app/store';
 import authHeader from '../../utils/authHeader';
 import getTeacherId from '../../utils/getTeacherId';
-
-export interface Enrolment {
-  studentId: string;
-}
+import { Enrolment } from '../enrolments/enrolmentSlice';
 
 export interface Course extends CourseBase {
   id: string;
