@@ -18,8 +18,8 @@ const theme = createMuiTheme({
     primary: indigo,
     secondary: orange,
     background: {
-      paper: '#eee',
-      default: '#ddd',
+      paper: '#f0f0f0',
+      default: '#fafafa',
     },
   },
   typography: {

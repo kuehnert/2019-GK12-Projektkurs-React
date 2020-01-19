@@ -1,5 +1,16 @@
-import { Fab, Table, TableBody, TableCell, TableHead, TableRow, Theme, Typography } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import {
+  Fab,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Theme,
+  Typography,
+  TableContainer,
+  Button,
+} from '@material-ui/core';
+import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import { Edit as EditIcon } from '@material-ui/icons';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -56,50 +67,100 @@ export default (props: RouteComponentProps<MatchParams>) => {
         <EditIcon />
       </Fab>
 
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Nr.</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Fehlstunden (Unentschuldigt)</TableCell>
-            <TableCell>Fehlende Hausaufgaben</TableCell>
-          </TableRow>
-        </TableHead>
+      <TableContainer className={classes.container}>
+        <Table size="small" stickyHeader>
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Nr.</StyledTableCell>
+              <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell>Fehlstunden (Unentschuldigt)</StyledTableCell>
+              <StyledTableCell>Fehlende Hausaufgaben</StyledTableCell>
+            </TableRow>
+          </TableHead>
 
-        <TableBody>
-          {enrolments.map((e, i) => {
-            const student = students[e.studentId];
+          <TableBody>
+            {enrolments.map((e, i) => {
+              const student = students[e.studentId];
 
-            return (
-              <TableRow key={e.id}>
-                <TableCell>{i + 1}</TableCell>
-                <TableCell>{student.lastname}, {student.firstname}</TableCell>
-                <TableCell>0 / 0</TableCell>
-                <TableCell>0 / 0</TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
+              return (
+                <StyledTableRow key={e.id} className={classes.row}>
+                  <StyledTableCell align="right">{i + 1}</StyledTableCell>
+                  <StyledTableCell>
+                    {student.lastname}, {student.firstname}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {e.absenceCount} / {e.absenceOutstandingCount}
+                    <ColorButton variant="outlined">Heute</ColorButton>
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {e.missingHomeworkCount} / {e.missingHomeworkOutstandingCount}
+                  </StyledTableCell>
+                </StyledTableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };
 
+const ColorButton = withStyles((theme: Theme) => ({
+  root: {
+    textTransform: 'none',
+    minWidth: 0,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    padding: theme.spacing(0),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    color: theme.palette.primary.main,
+    fontSize: '1rem',
+
+    '&:hover': {
+      color: theme.palette.primary.contrastText,
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
+}))(Button);
+
+const StyledTableCell = withStyles((theme: Theme) =>
+  createStyles({
+    head: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    body: {
+      fontSize: 14,
+    },
+  })
+)(TableCell);
+
+const StyledTableRow = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.background.paper,
+      },
+    },
+  })
+)(TableRow);
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {},
-    table: {
-      minWidth: 650,
-    },
-    tr: {
+    container: {},
+    table: {},
+    row: {
       '&:hover': {
-        backgroundColor: theme.palette.primary.light,
+        backgroundColor: theme.palette.grey[400],
       },
     },
     fab: {
       position: 'fixed',
       bottom: theme.spacing(3),
       right: theme.spacing(3),
+      background: 'white',
     },
   })
 );

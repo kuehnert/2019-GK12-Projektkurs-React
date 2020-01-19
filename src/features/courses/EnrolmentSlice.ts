@@ -11,10 +11,14 @@ export interface Enrolment extends EnrolmentBase {
   termId: string;
   active: boolean;
   writesExams: boolean;
-  absenceCount: number;
+
   absences: Absence[];
-  missingHomeworkCount: number;
+  absenceCount: number;
+  absenceOutstandingCount: number;
+
   missingHomework: MissingHomework[];
+  missingHomeworkCount: number;
+  missingHomeworkOutstandingCount: number;
   finalGradePoints: number;
   student: Student;
 }
