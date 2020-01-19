@@ -18,7 +18,8 @@ const columns = [
 ];
 
 export default ({ termId }: Props) => {
-  const students = useSelector((state: RootState) => state.students.students[termId] || []).map(s => ({ ...s }));
+  const studentMap = useSelector((state: RootState) => state.students.students[termId] || {});
+  const students = Object.values(studentMap).map(s => ({ ...s }));
   const dispatch = useDispatch();
 
   useEffect(() => {

@@ -25,7 +25,7 @@ export interface StudentBase {
 }
 
 export interface StudentState {
-  students: { [termId: string]: Student[] };
+  students: { [termId: string]: { [id: string]: Student } };
   isRequesting: Boolean;
   error: string | null;
 }
@@ -42,14 +42,14 @@ export const studentSlice = createSlice({
   reducers: {
     getStudentsSuccess(state, action: PayloadAction<{ termId: string; students: Student[] }>) {
       const { termId, students } = action.payload;
-      state.students[termId] = students;
+      state.students[termId] = Object.assign({}, ...students.map(s => ({ [s.id]: s })));
     },
     getStudentsFailed(state, action: PayloadAction<string>) {
       state.error = action.payload;
     },
     createStudentsSuccess(state, action: PayloadAction<{ termId: string; students: Student[] }>) {
       const { termId, students } = action.payload;
-      state.students[termId] = (state.students[termId] || []).concat(students);
+      state.students[termId] = Object.assign({ ...state.students[termId], ...students.map(s => ({ [s.id]: s })) });
     },
     createStudentsFailed(state, action: PayloadAction<string>) {
       state.error = action.payload;

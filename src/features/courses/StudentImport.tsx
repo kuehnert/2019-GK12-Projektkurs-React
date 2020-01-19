@@ -103,7 +103,7 @@ export default (props: Props) => {
 
     studentData.forEach(s => {
       delete s.undefined;
-      const e = termStudents.find(t => studentEquals(t, s));
+      const e = Object.values(termStudents).find(t => studentEquals(t, s));
 
       if (e) {
         tempExisting.push(e.id);

@@ -52,7 +52,7 @@ const StudentEnrol: React.FC<Props> = props => {
       return;
     }
 
-    const fgDupes = termStudents.map(ts => ts.formGroup);
+    const fgDupes = Object.values(termStudents).map(ts => ts.formGroup);
     const fgs = Array.from(new Set(fgDupes));
     setFormGroups(fgs);
   }, [termStudents]);
@@ -63,7 +63,7 @@ const StudentEnrol: React.FC<Props> = props => {
     }
 
     setEnrolments(courseEnrolments);
-    let tmpStudents = selectedForm !== '' ? termStudents.filter(ts => ts.formGroup === selectedForm) : termStudents;
+    let tmpStudents = selectedForm !== '' ? Object.values(termStudents).filter(ts => ts.formGroup === selectedForm) : Object.values(termStudents);
 
     setRemaining(tmpStudents.filter(ts => !courseEnrolments.find(e => e.studentId === ts.id)));
   }, [courseEnrolments, selectedForm, termStudents]);
@@ -150,7 +150,7 @@ const StudentEnrol: React.FC<Props> = props => {
                 {(provided, snapshot) => (
                   <List dense component="div" role="list" ref={provided.innerRef} className={classes.list}>
                     {enrolments.map((e, i) => {
-                      const s = termStudents.find(ts => ts.id === e.studentId);
+                      const s = termStudents[e.studentId];
                       if (s == null) {
                         return null;
                       }

@@ -1,4 +1,4 @@
-import { TableRow, Fab, Table, TableCell, TableHead, Theme, Typography } from '@material-ui/core';
+import { Fab, Table, TableBody, TableCell, TableHead, TableRow, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Edit as EditIcon } from '@material-ui/icons';
 import React, { useEffect } from 'react';
@@ -11,6 +11,7 @@ import { useCourse, useTerm } from '../../utils/selectors';
 import { getTerm } from '../terms/termSlice';
 import { getCourses } from './courseSlice';
 import { getEnrolments } from './enrolmentSlice';
+import { getStudents } from './studentSlice';
 
 interface MatchParams {
   termId: string;
@@ -23,11 +24,13 @@ export default (props: RouteComponentProps<MatchParams>) => {
   const term = useTerm(termId);
   const course = useCourse(termId, courseId);
   const enrolments = useSelector((state: RootState) => state.enrolments.enrolments[courseId]);
+  const students = useSelector((state: RootState) => state.students.students[termId]);
   const classes = useStyles();
 
   useEffect(() => {
     if (term == null) {
       dispatch(getTerm(termId));
+      dispatch(getStudents(termId));
     }
 
     if (course == null) {
@@ -55,20 +58,28 @@ export default (props: RouteComponentProps<MatchParams>) => {
 
       <Table>
         <TableHead>
-          <TableCell>Nr.</TableCell>
-          <TableCell>Name</TableCell>
-          <TableCell>Fehlstunden (Unentschuldigt)</TableCell>
-          <TableCell>Fehlende Hausaufgaben</TableCell>
+          <TableRow>
+            <TableCell>Nr.</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Fehlstunden (Unentschuldigt)</TableCell>
+            <TableCell>Fehlende Hausaufgaben</TableCell>
+          </TableRow>
         </TableHead>
 
-        {enrolments.map((e, i) => (
-          <TableRow>
-            <TableCell>{i + 1}</TableCell>
-            <TableCell>{e.id}</TableCell>
-            <TableCell>0 / 0</TableCell>
-            <TableCell>0 / 0</TableCell>
-          </TableRow>
-        ))}
+        <TableBody>
+          {enrolments.map((e, i) => {
+            const student = students[e.studentId];
+
+            return (
+              <TableRow key={e.id}>
+                <TableCell>{i + 1}</TableCell>
+                <TableCell>{student.lastname}, {student.firstname}</TableCell>
+                <TableCell>0 / 0</TableCell>
+                <TableCell>0 / 0</TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
       </Table>
     </div>
   );
@@ -86,7 +97,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     fab: {
-      position: 'absolute',
+      position: 'fixed',
       bottom: theme.spacing(3),
       right: theme.spacing(3),
     },
