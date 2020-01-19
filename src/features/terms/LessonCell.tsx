@@ -29,21 +29,21 @@ function selectBackgroundColor(isActive: boolean, canDrop: boolean, hasLesson: b
   }
 }
 
-const useStyles = makeStyles(({ palette }: Theme) =>
+const useStyles = makeStyles(({ spacing, palette }: Theme) =>
   createStyles({
     lesson: {
-      // background: palette.primary.main,
+      padding: spacing(0.5),
       color: 'black',
       cursor: 'pointer',
       border: '1px solid rgba(100, 100, 100, 1)',
       textAlign: 'center',
-      width: '10%',
+      height: '45px',
     },
     lessonBlank: {
-      // background: palette.text.disabled,
+      padding: spacing(0.5),
+      height: '45px',
       border: '1px solid rgba(100, 100, 100, 1)',
       textAlign: 'center',
-      width: '15%',
     },
   })
 );
@@ -69,8 +69,6 @@ const LessonCell: React.FC<Props> = ({ lesson, weekday, period, termId }: Props)
     item,
     end(item: { movingLesson: Lesson } | undefined, monitor: DragSourceMonitor) {
       const dropResult: any = monitor.getDropResult();
-      // console.log('item', item);
-      // console.log('dropResult', dropResult);
 
       if (item?.movingLesson && dropResult.type === 'TrashCan') {
         dispatch(deleteLesson(termId, item.movingLesson));
@@ -105,7 +103,7 @@ const LessonCell: React.FC<Props> = ({ lesson, weekday, period, termId }: Props)
   } else {
     return (
       <TableCell ref={drop} style={{ backgroundColor }} className={classes.lessonBlank}>
-        <Typography>{isActive ? 'Neue Stunde' : ''}</Typography>
+        <Typography variant="body2">{isActive ? 'Neue Stunde' : ''}</Typography>
       </TableCell>
     );
   }

@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import React from 'react';
 import Loading from '../../components/Loading';
-// import Time from '../../components/Time';
 import { Lesson, Period, Term } from './termSlice';
 import LessonCell from './LessonCell';
 
@@ -14,23 +13,22 @@ interface Props {
 
 const useStyles = makeStyles(({ palette }: Theme) =>
   createStyles({
+    table: {
+      tableLayout: 'fixed',
+    },
     period: {
       color: palette.secondary.contrastText,
       background: palette.secondary.main,
       textAlign: 'center',
       border: '1px solid rgba(100, 100, 100, 1)',
-      fontSize: '0.7rem',
-      width: '10%',
-    },
-    periodName: {
-      fontSize: '2rem',
+      width: '50%',
     },
     header: {
       color: palette.secondary.contrastText,
       background: palette.secondary.main,
       textAlign: 'center',
       border: '1px solid rgba(100, 100, 100, 1)',
-      width: '10%',
+      width: '100%',
     },
   })
 );
@@ -49,7 +47,7 @@ export default function EditTimetable({ termId }: Props) {
     return periods.map((period: Period) => (
       <TableRow key={period.number}>
         <TableCell className={classes.period} align="center">
-          <Typography variant="h6">{period.name}</Typography>
+          <Typography variant="body1">{period.name}</Typography>
           {/* <Time time={period.start} />-<Time time={period.end} /> */}
         </TableCell>
         {[0, 1, 2, 3, 4, 5].map(weekday => {
@@ -65,22 +63,16 @@ export default function EditTimetable({ termId }: Props) {
   }
 
   return (
-    <Table size="small">
+    <Table size="small" className={classes.table}>
       <TableHead>
         <TableRow>
-          <TableCell className={classes.header}>Std</TableCell>
+          <TableCell className={classes.period}>Std</TableCell>
           <TableCell className={classes.header}>Mo</TableCell>
           <TableCell className={classes.header}>Di</TableCell>
           <TableCell className={classes.header}>Mi</TableCell>
           <TableCell className={classes.header}>Do</TableCell>
           <TableCell className={classes.header}>Fr</TableCell>
           <TableCell className={classes.header}>Sa</TableCell>
-          {/* <TableCell className={classes.header}>Montag</TableCell>
-          <TableCell className={classes.header}>Dienstag</TableCell>
-          <TableCell className={classes.header}>Mittwoch</TableCell>
-          <TableCell className={classes.header}>Donnerstag</TableCell>
-          <TableCell className={classes.header}>Freitag</TableCell>
-          <TableCell className={classes.header}>Samstag</TableCell> */}
         </TableRow>
       </TableHead>
       <tbody>{renderPeriods()}</tbody>

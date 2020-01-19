@@ -2,6 +2,7 @@ import { indigo, orange } from '@material-ui/core/colors';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import React from 'react';
 import Routes from './Routes';
+import './App.css';
 
 const App: React.FC = (props: any) => {
   return (
@@ -22,8 +23,28 @@ const theme = createMuiTheme({
     },
   },
   typography: {
-    htmlFontSize: 14,
-    fontSize: 12,
+    htmlFontSize: 10,
+    fontSize: 13,
+    h1: {
+      fontSize: '6rem',
+      fontWeight: 600,
+    },
+    h2: {
+      fontSize: '5rem',
+      fontWeight: 600,
+    },
+    h3: {
+      fontSize: '4rem',
+    },
+    h4: {
+      fontSize: '3rem',
+    },
+    h5: {
+      fontSize: '2.5rem',
+    },
+    h6: {
+      fontSize: '2rem',
+    },
   },
 });
 

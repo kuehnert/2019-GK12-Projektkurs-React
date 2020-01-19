@@ -4,31 +4,25 @@ import React from 'react';
 import { useDrop } from 'react-dnd';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 
-// import { useSelector } from 'react-redux';
-// import { RootState } from '../../app/rootReducer';
-
 function selectBackgroundColor(isActive: boolean, canDrop: boolean) {
   if (isActive) {
     return 'darkgreen';
   } else if (canDrop) {
     return '#efe';
   } else {
-    return 'white';
+    return '#eee';
   }
 }
 
-const useStyles = makeStyles(({ palette }: Theme) =>
+const useStyles = makeStyles(({ palette, spacing }: Theme) =>
   createStyles({
     trashCan: {
-      position: 'static',
-      bottom: '12px',
+      marginTop: spacing(2),
       display: 'flex',
       alignItems: 'center',
       flexDirection: 'column',
     },
     content: {
-      // display: 'flex',
-      // alignItems: 'center',
     },
     icon: {
       fontSize: 64,

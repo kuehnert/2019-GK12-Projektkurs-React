@@ -54,13 +54,13 @@ export default (props: Props) => {
   const handleImport = async () => {
     // const studentsToCreate = newStudents.filter(s => !s.termDuplicate);
     if (newStudents.length > 0) {
-      console.log('Creating', newStudents.length, 'students');
+      // console.log('Creating', newStudents.length, 'students');
       await dispatch(createStudents(term.id, newStudents));
     }
 
     // const studentsToEnrol = newStudents.filter(s => !s.courseDuplicate);
     if (existingStudentIds.length > 0) {
-      console.log('Creating', existingStudentIds.length, 'enrolments');
+      // console.log('Creating', existingStudentIds.length, 'enrolments');
       await dispatch(createEnrolments(term.id, course.id, existingStudentIds));
     }
   };
@@ -114,8 +114,8 @@ export default (props: Props) => {
 
     setNewStudents(tempNew);
     setExistingStudentIds(tempExisting);
-    console.log('newStudents', tempNew);
-    console.log('existingStudentIds', tempExisting);
+    // console.log('newStudents', tempNew);
+    // console.log('existingStudentIds', tempExisting);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

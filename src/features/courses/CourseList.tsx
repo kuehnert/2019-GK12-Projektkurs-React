@@ -1,12 +1,11 @@
-import { Divider, Fab, List, Theme, Typography } from '@material-ui/core';
+import { Button, List, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Add as AddIcon } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import CourseDialog from './CourseDialog';
-import { Course, CourseBase, createCourse, defaultCourse } from './courseSlice';
 import CourseItem from './CourseItem';
+import { Course, CourseBase, createCourse, defaultCourse } from './courseSlice';
 
 interface Props {
   termId: string;
@@ -39,15 +38,12 @@ const CourseList = (props: Props) => {
   return (
     <div className={classes.root}>
       <Typography variant="h4">Kurse</Typography>
-      <Divider />
 
       <List component="nav">{renderCourses()}</List>
 
-      <Divider />
-
-      <Fab color="primary" className={classes.fab} aria-label="add" onClick={handleCreateCourse}>
-        <AddIcon />
-      </Fab>
+      <Button variant="contained" color="primary" aria-label="add" onClick={handleCreateCourse} fullWidth>
+        Neuer Kurs
+      </Button>
 
       <CourseDialog
         open={isDialogOpen}
@@ -67,11 +63,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
       maxWidth: 360,
       backgroundColor: theme.palette.background.paper,
-      // width: '95%',
-      // marginTop: theme.spacing(3),
-      // overflowX: 'auto',
-      // margin: 'auto',
-      // padding: 20,
+      padding: theme.spacing(2),
     },
     paper: {
       padding: theme.spacing(2),

@@ -71,7 +71,7 @@ const Timetable = ({ term }: Props) => {
 
   return (
     <div>
-      <Typography variant="h5">Stundenplan</Typography>
+      <Typography variant="h3">Stundenplan</Typography>
 
       <Table size="small">
         <TableHead>

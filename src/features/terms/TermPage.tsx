@@ -33,8 +33,8 @@ const TermPage = (props: RouteComponentProps<MatchParams>) => {
 
   return (
     <div>
-      <Typography variant="h3">{term.name}</Typography>
-      <Typography variant="h4">
+      <Typography variant="h1">{term.name}</Typography>
+      <Typography variant="h2">
         {formatDate(term.start)}-{formatDate(term.end)}
       </Typography>
       <Fab className={classes.fab} onClick={() => history.push(`/terms/${term.id}/edit_timetable`)}>

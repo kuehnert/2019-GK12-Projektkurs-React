@@ -1,4 +1,4 @@
-import { Paper, Button, Grid, Theme, Typography } from '@material-ui/core';
+import { Button, Grid, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect } from 'react';
 import CourseList from '../courses/CourseList';
@@ -25,14 +25,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     buttons: {
       '& > *': {
-        // margin: theme.spacing(1),
         marginTop: theme.spacing(2),
       },
     },
   })
 );
 
-const EditTimetablePage: React.FC<RouteComponentProps<MatchParams>> = (props) => {
+const EditTimetablePage: React.FC<RouteComponentProps<MatchParams>> = props => {
   const { termId } = props.match.params;
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -48,11 +47,11 @@ const EditTimetablePage: React.FC<RouteComponentProps<MatchParams>> = (props) =>
       <Grid container className={classes.root} spacing={1}>
         <Grid item xs={9}>
           <EditTimetable termId={termId} />
-          <Paper className={classes.root}>Hello</Paper>
         </Grid>
 
         <Grid item xs={3}>
           <CourseList termId={termId} />
+
           <TrashCan />
         </Grid>
       </Grid>

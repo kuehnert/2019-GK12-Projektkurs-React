@@ -41,7 +41,7 @@ const StudentEnrol: React.FC<Props> = props => {
   const [selectedForm, setSelectedForm] = useState('');
 
   useEffect(() => {
-    console.log('Initial data load...');
+    // console.log('Initial data load...');
     dispatch(getEnrolments(course));
     dispatch(getStudents(term.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,7 +74,7 @@ const StudentEnrol: React.FC<Props> = props => {
 
   const onDragEnd = (result: any) => {
     const { source, destination } = result;
-    console.log('source', source, 'destination', destination);
+    // console.log('source', source, 'destination', destination);
 
     // dropped outside the list
     if (!destination) {
