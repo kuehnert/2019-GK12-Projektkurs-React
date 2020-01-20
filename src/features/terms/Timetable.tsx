@@ -1,6 +1,6 @@
 import { Table, TableCell, TableHead, TableRow, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
@@ -9,14 +9,24 @@ import history from '../../history';
 import { getCourses } from '../courses/courseSlice';
 import { Lesson, Period } from '../terms/termSlice';
 import { Term } from './termSlice';
+import { TimetableLesson, getCurrentPeriod, isCurrentPeriod } from '../../utils/termHelpers';
+import { useInterval } from '../../utils/hooks';
+import classNames from 'classnames';
 
 type Props = { term: Term };
 
 const Timetable = ({ term }: Props) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const courses = useSelector((state: RootState) => state.courses.courses[term.id]);
   const classes = useStyles();
   const periods = term?.periods || [];
+
+  const [currentLesson, setcurrentLesson] = useState<TimetableLesson | null>(getCurrentPeriod(periods));
+
+  useInterval(() => {
+    const current = getCurrentPeriod(periods);
+    setcurrentLesson(current);
+  }, 10 * 1000);
 
   useEffect(() => {
     if (courses == null) {
@@ -41,8 +51,10 @@ const Timetable = ({ term }: Props) => {
           <Typography variant="h6">{period.name}</Typography>
           <Time time={period.start} />-<Time time={period.end} />
         </TableCell>
+
         {Array.from(Array(maxWeekday).keys()).map(weekday => {
           const lesson = timetable[`${weekday},${period.number}`];
+          const isCurrent = isCurrentPeriod({ weekday, periodNo: period.number }, currentLesson);
 
           if (lesson != null) {
             const course = courses.find(c => c.id === lesson.courseId);
@@ -50,7 +62,7 @@ const Timetable = ({ term }: Props) => {
             return (
               <TableCell
                 key={weekday}
-                className={classes.lesson}
+                className={classNames(classes.lesson, isCurrent && classes.lessonCurrent)}
                 align="center"
                 onClick={() => history.push(`/terms/${term?.id}/courses/${lesson.courseId}`)}>
                 <Typography variant="body2">{course?.name}</Typography>
@@ -58,7 +70,13 @@ const Timetable = ({ term }: Props) => {
               </TableCell>
             );
           } else {
-            return <TableCell key={weekday} className={classes.lessonBlank} />;
+            return (
+              <TableCell
+                key={weekday}
+                className={classNames(classes.lessonBlank, isCurrent && classes.lessonCurrent)}
+                style={isCurrent ? { color: 'black', background: 'yellow', opacity: 0.3 } : {}}
+              />
+            );
           }
         })}
       </TableRow>
@@ -102,6 +120,9 @@ const useStyles = makeStyles(({ palette }: Theme) =>
     lessonBlank: {
       background: palette.text.disabled,
       border: '1px solid rgba(100, 100, 100, 1)',
+    },
+    lessonCurrent: {
+      opacity: 0.5,
     },
     period: {
       color: palette.secondary.contrastText,

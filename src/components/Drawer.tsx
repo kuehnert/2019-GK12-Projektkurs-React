@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../app/rootReducer';
 import { Course } from '../features/courses/courseSlice';
 import history from '../history';
-import { useTerm, useTermParams } from '../utils/selectors';
+import { useTerm, useTermParams } from '../utils/hooks';
 import { BookOutlined as BookIcon, Event as EventIcon, List as ListIcon } from '@material-ui/icons';
 
 export default () => {

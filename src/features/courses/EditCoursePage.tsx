@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import Loading from '../../components/Loading';
-import { useCourse, useTerm } from '../../utils/selectors';
+import { useCourse, useTerm } from '../../utils/hooks';
 import { getTerm } from '../terms/termSlice';
 import { getCourses } from './courseSlice';
 import StudentImport from './StudentImport';

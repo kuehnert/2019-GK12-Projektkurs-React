@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import Loading from '../../components/Loading';
 import history from '../../history';
-import { useTerm } from '../../utils/selectors';
+import { useTerm } from '../../utils/hooks';
 import TermForm from './TermForm';
 import { getTerm, Term, TermBase, updateTerm } from './termSlice';
 import { getStudents } from '../courses/studentSlice';

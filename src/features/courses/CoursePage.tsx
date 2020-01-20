@@ -9,7 +9,7 @@ import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import history from '../../history';
 import { getLessons } from '../../utils/courseHelpers';
-import { useCourse, useTerm } from '../../utils/selectors';
+import { useCourse, useTerm } from '../../utils/hooks';
 import { getEnrolments } from '../enrolments/enrolmentSlice';
 import EnrolmentTable from '../enrolments/EnrolmentTable';
 import { getTerm } from '../terms/termSlice';

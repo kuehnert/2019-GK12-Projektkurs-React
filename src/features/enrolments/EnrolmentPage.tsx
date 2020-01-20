@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
-import { useCourse, useTerm } from '../../utils/selectors';
+import { useCourse, useTerm } from '../../utils/hooks';
 import { getCourses } from '../courses/courseSlice';
 import { getStudents } from '../courses/studentSlice';
 import { getTerm } from '../terms/termSlice';
