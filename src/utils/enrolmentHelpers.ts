@@ -12,5 +12,5 @@ export function absentOnDate(enrolment: Enrolment, date: Date, unexcused: boolea
 }
 
 export function absenceExcused({ type }: Absence): boolean {
-  return type === AbsenceTypes.ENTSCHULDIGT || type === AbsenceTypes.SCHULISCH;
+  return type !== AbsenceTypes.UNENTSCHULDIGT && type !== AbsenceTypes.ABGELAUFEN;
 }

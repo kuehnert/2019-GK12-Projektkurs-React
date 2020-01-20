@@ -23,7 +23,9 @@ interface Props {
 const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const handleAbsence = () => {
+  const handleAbsence = (event: React.MouseEvent) => {
+    event.stopPropagation();
+
     const newAbsence = {
       date,
       lessons,

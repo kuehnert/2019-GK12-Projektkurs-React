@@ -3,7 +3,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { absenceExcused } from '../../utils/enrolmentHelpers';
 import { formatDate } from '../../utils/formatter';
-import { Enrolment } from './enrolmentSlice';
+import { Enrolment, AbsenceTypes } from './enrolmentSlice';
+import AbsenceButton from './AbsenceButton';
 
 interface Props {
   enrolment: Enrolment;
@@ -30,9 +31,11 @@ const AbsenceTable: React.FC<Props> = ({ enrolment }) => {
           {enrolment.absences.map((a, i) => (
             <TableRow key={a.date.valueOf()}>
               <TableCell align="center">{formatDate(a.date, 'withWeekday')}</TableCell>
-              <TableCell align="center">{a.lessons}</TableCell>
+              <TableCell align="center">{a.type === AbsenceTypes.SCHULISCH ? `(${a.lessons})` : a.lessons}</TableCell>
               <TableCell align="center">{absenceExcused(a) ? 0 : a.lessons }</TableCell>
-              <TableCell align="left">{a.type}</TableCell>
+              <TableCell align="center">
+                <AbsenceButton enrolment={enrolment} index={i}/>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

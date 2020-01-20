@@ -41,7 +41,9 @@ export interface Absence {
 export enum AbsenceTypes {
   UNENTSCHULDIGT = 'Unentschuldigt',
   ENTSCHULDIGT = 'Entschuldigt',
+  BEURLAUBT = 'Beurlaubt',
   SCHULISCH = 'Schulisch',
+  ABGELAUFEN = 'Nicht mehr entschuldbar',
 }
 
 export interface MissingHomework {
@@ -92,7 +94,7 @@ export const enrolmentSlice = createSlice({
     },
     updateEnrolmentSuccess(state, action: PayloadAction<Enrolment>) {
       const enrol = action.payload;
-      const enrolments = state.enrolments[enrol.courseId]
+      const enrolments = state.enrolments[enrol.courseId];
       const index = enrolments.findIndex(e => e.id === enrol.id);
       if (index > -1) {
         enrolments[index] = enrol;
