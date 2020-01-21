@@ -1,23 +1,41 @@
-import { Button, Theme } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Theme, ButtonProps } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
 
-const ColorButton = withStyles((theme: Theme) => ({
-  root: {
-    textTransform: 'none',
-    minWidth: 0,
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    padding: theme.spacing(0),
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    color: theme.palette.primary.main,
-    fontSize: '1rem',
+interface Props {
+  hoverText?: string;
+}
 
-    '&:hover': {
-      color: theme.palette.primary.contrastText,
-      backgroundColor: theme.palette.primary.main,
+const ColorButton: React.FC<Props & ButtonProps> = ({ children, hoverText, ...other }) => {
+  const classes = useStyles();
+  const [hover, setHover] = useState(false);
+
+  return (
+    <Button className={classes.root} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)} {...other}>
+      {children} {hover && hoverText}
+    </Button>
+  );
+};
+
+const useStyles = makeStyles(({ palette, spacing }: Theme) =>
+  createStyles({
+    root: {
+      textTransform: 'none',
+      minWidth: 0,
+      marginLeft: spacing(1),
+      marginRight: spacing(1),
+      padding: spacing(0),
+      paddingLeft: spacing(1),
+      paddingRight: spacing(1),
+      color: palette.primary.main,
+      fontSize: '1rem',
+
+      '&:hover': {
+        color: palette.primary.contrastText,
+        backgroundColor: palette.primary.main,
+      },
     },
-  },
-}))(Button);
+  })
+);
 
 export default ColorButton;

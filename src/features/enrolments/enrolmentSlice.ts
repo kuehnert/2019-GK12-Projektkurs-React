@@ -35,7 +35,6 @@ export interface Absence {
   type: AbsenceTypes;
   lessons: number;
   minutes?: number;
-  done: boolean;
 }
 
 export enum AbsenceTypes {

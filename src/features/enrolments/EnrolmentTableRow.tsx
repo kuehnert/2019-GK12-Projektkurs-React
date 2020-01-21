@@ -23,7 +23,9 @@ interface Props {
 const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const handleAbsence = (event: React.MouseEvent) => {
+  const lastAbsence = enrolment.absences.find(a => a.type === AbsenceTypes.UNENTSCHULDIGT);
+
+  const handleNewAbsence = (event: React.MouseEvent) => {
     event.stopPropagation();
 
     const newAbsence = {
@@ -33,8 +35,20 @@ const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) 
       done: false,
     };
 
+    // TODO: Möglicher Fehler mit Homework!
     let newEnrolment = { ...enrolment, absences: [...enrolment.absences, newAbsence] };
     dispatch(updateEnrolment(newEnrolment));
+  };
+
+  const handleApology = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    let newEnrolment: Enrolment = JSON.parse(JSON.stringify(enrolment));
+    let newLastAbsence = newEnrolment.absences.find(a => a.date === lastAbsence?.date);
+
+    if (newLastAbsence) {
+      newLastAbsence.type = AbsenceTypes.ENTSCHULDIGT;
+      dispatch(updateEnrolment(newEnrolment));
+    }
   };
 
   return (
@@ -54,16 +68,21 @@ const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) 
         </Typography>
       </StyledEnrolmentCell>
 
-      <StyledEnrolmentCell align="center">
+      <StyledEnrolmentCell align="left" className={lastAbsence && classes.outstanding}>
         {enrolment.absenceCount} / {enrolment.absenceOutstandingCount}
-        {lessons > 0 && !absentOnDate(enrolment, date, true) && (
-          <ColorButton variant="outlined" onClick={handleAbsence}>
+        {lessons > 0 && !absentOnDate(enrolment, date) && (
+          <ColorButton variant="outlined" onClick={handleNewAbsence} hoverText="fehlt">
             {isToday(date) ? 'Heute' : formatDate(date)}
+          </ColorButton>
+        )}
+        {lastAbsence && (
+          <ColorButton color="secondary" variant="contained" onClick={handleApology} hoverText="entsch.">
+            {formatDate(lastAbsence.date)}
           </ColorButton>
         )}
       </StyledEnrolmentCell>
 
-      <StyledEnrolmentCell align="center">
+      <StyledEnrolmentCell align="left">
         {enrolment.missingHomeworkCount} / {enrolment.missingHomeworkOutstandingCount}
       </StyledEnrolmentCell>
     </StyledEnrolmentRow>
@@ -77,6 +96,9 @@ const useStyles = makeStyles((theme: Theme) =>
       '&:hover': {
         backgroundColor: theme.palette.grey[400],
       },
+    },
+    outstanding: {
+      background: theme.palette.warning.light,
     },
   })
 );
