@@ -98,7 +98,7 @@ export default () => {
             <ErrorMessage name="email" />
 
             <FormControl fullWidth margin="normal">
-              <InputLabel>Sortierung</InputLabel>
+              <InputLabel>Anzeige & Sortierung von Schülernamen in Kursen</InputLabel>
               <Field name="sortByLastname" fullWidth margin="dense" component={FSelect}>
                   <MenuItem value="true">Nachname, Vorname</MenuItem>
                   <MenuItem value="false">Vorname Nachname</MenuItem>

@@ -2,9 +2,9 @@ import { Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { isToday } from 'date-fns';
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import history from '../../history';
-import { absentOnDate, homeworkIssueOnDate } from '../../utils/enrolmentHelpers';
+import { absentOnDate, homeworkIssueOnDate, formatName } from '../../utils/enrolmentHelpers';
 import { formatDate } from '../../utils/formatter';
 import { Student } from '../courses/studentSlice';
 import ColorButton from './ColorButton';
@@ -12,6 +12,7 @@ import { HomeworkIssue, HomeworkIssueType, AbsenceType, Enrolment, updateEnrolme
 import StyledEnrolmentCell from './StyledEnrolmentCell';
 import StyledEnrolmentRow from './StyledEnrolmentRow';
 import _ from 'lodash';
+import { RootState } from '../../app/rootReducer';
 
 interface Props {
   enrolment: Enrolment;
@@ -22,6 +23,7 @@ interface Props {
 }
 
 const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) => {
+  const teacher = useSelector((state: RootState) => state.teachers.teacher);
   const classes = useStyles();
   const dispatch = useDispatch();
   const lastAbsence = _.findLast(enrolment.absences, a => a.type === AbsenceType.UNENTSCHULDIGT);
@@ -91,9 +93,7 @@ const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) 
 
       <StyledEnrolmentCell>
         <Typography variant="body1">
-          <b>
-            {student.lastname}, {student.firstname}
-          </b>
+          <b>{formatName(student, String(teacher?.sortByLastname))}</b>
         </Typography>
       </StyledEnrolmentCell>
 
