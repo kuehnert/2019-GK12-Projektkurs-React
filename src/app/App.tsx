@@ -6,11 +6,13 @@ import { de } from 'date-fns/locale';
 import React from 'react';
 import './App.css';
 import Routes from './Routes';
+import { CssBaseline } from '@material-ui/core';
 
 const App: React.FC = (props: any) => {
   return (
     <MuiThemeProvider theme={theme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de}>
+        <CssBaseline />
         <Routes />
       </MuiPickersUtilsProvider>
     </MuiThemeProvider>

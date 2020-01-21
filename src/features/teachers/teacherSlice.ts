@@ -4,6 +4,25 @@ import sokratesApi from '../../apis/sokratesApi';
 import authHeader from '../../utils/authHeader';
 import { AppThunk } from '../../app/store';
 
+export const states = [
+  'Baden-Württemberg',
+  'Bayern',
+  'Berlin',
+  'Brandenburg',
+  'Bremen',
+  'Hamburg',
+  'Hessen',
+  'Mecklenburg-Vorpommern',
+  'Niedersachsen',
+  'Nordrhein-Westfalen',
+  'Rheinland-Pfalz',
+  'Saarland',
+  'Sachsen-Anhalt',
+  'Sachsen',
+  'Schleswig-Holstein',
+  'Thüringen',
+];
+
 export interface Teacher {
   id: string;
   firstname: string;
@@ -12,13 +31,7 @@ export interface Teacher {
   state: string;
   email: string;
   terms: Term[];
-}
-
-export interface TeacherState {
-  isLoggedIn: boolean;
-  isRequesting: boolean;
-  teacher: Teacher | null;
-  error: string | null;
+  sortByLastname?: boolean;
 }
 
 export interface SignUpValues {
@@ -34,10 +47,35 @@ export interface LoginValues {
   password: string;
 }
 
+export const defaultTeacher = {
+  id: '',
+  firstname: '',
+  lastname: '',
+  schoolName: '',
+  email: '',
+  sortByLastname: true,
+  state: 'Niedersachsen',
+  terms: Array<Term>(),
+};
+
+export interface TeacherState {
+  isLoggedIn: boolean;
+  isRequesting: boolean;
+  teacher: Teacher | null;
+  error: string | null;
+}
+
 // TODO: check token
 // const token = JSON.parse(localStorage.getItem('token'));
 const storedTeacher = localStorage.getItem('teacher');
-const teacher = storedTeacher != null ? JSON.parse(storedTeacher) : null;
+let teacher = null;
+try {
+  teacher = storedTeacher != null ? JSON.parse(storedTeacher) : null;
+} catch (error) {
+  localStorage.removeItem('teacher');
+  localStorage.removeItem('token');
+  teacher = null;
+}
 
 const initialState: TeacherState = {
   isLoggedIn: teacher == null ? false : true,
@@ -86,13 +124,31 @@ const teacherSlice = createSlice({
       state.error = action.payload;
       state.isRequesting = false;
     },
+    updateTeacherSuccess(state, action: PayloadAction<Teacher>) {
+      state.teacher = action.payload;
+      state.error = null;
+    },
+    updateTeacherFailed(state, action: PayloadAction<string>) {
+      state.error = action.payload;
+      state.isRequesting = false;
+    },
     submitting(state, action: PayloadAction) {
       state.isRequesting = true;
     },
   },
 });
 
-export const { loginSuccess, logoutSuccess, submitting, loginFailed, logoutFailed, signUpFailed, signUpSuccess } = teacherSlice.actions;
+export const {
+  loginSuccess,
+  logoutSuccess,
+  submitting,
+  loginFailed,
+  logoutFailed,
+  signUpFailed,
+  signUpSuccess,
+  updateTeacherFailed,
+  updateTeacherSuccess,
+} = teacherSlice.actions;
 
 export default teacherSlice.reducer;
 
@@ -114,6 +170,20 @@ export const login = (values: LoginValues): AppThunk => async dispatch => {
   dispatch(loginSuccess(teacher));
 };
 
+export const logout = (): AppThunk => async dispatch => {
+  try {
+    await sokratesApi.post('/teachers/logout', null, { headers: authHeader() });
+  } catch (error) {
+    dispatch(logoutFailed(error.toString()));
+    return;
+  } finally {
+    localStorage.removeItem('teacher');
+    localStorage.removeItem('token');
+  }
+
+  dispatch(logoutSuccess());
+};
+
 export const signUp = (values: SignUpValues): AppThunk => async dispatch => {
   dispatch(submitting());
   let teacher, token;
@@ -133,16 +203,20 @@ export const signUp = (values: SignUpValues): AppThunk => async dispatch => {
   dispatch(signUpSuccess(teacher));
 };
 
-export const logout = (): AppThunk => async dispatch => {
+export const updateTeacher = (values: Teacher): AppThunk => async dispatch => {
+  dispatch(submitting());
+  let teacher;
+
   try {
-    await sokratesApi.post('/teachers/logout', null, { headers: authHeader() });
+    const response = await sokratesApi.patch(`/teachers/${values.id}`, values, {
+      headers: authHeader(),
+    });
+    teacher = response.data;
+    localStorage.setItem('teacher', JSON.stringify(teacher));
   } catch (error) {
-    dispatch(logoutFailed(error.toString()));
+    dispatch(updateTeacherFailed(error.toString()));
     return;
-  } finally {
-    localStorage.removeItem('teacher');
-    localStorage.removeItem('token');
   }
 
-  dispatch(logoutSuccess());
+  dispatch(updateTeacherSuccess(teacher));
 };

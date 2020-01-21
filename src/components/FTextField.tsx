@@ -1,8 +1,8 @@
 // source: https://github.com/gerhat/material-ui-formik-components/blob/master/src/TextField/TextField.jsx
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import { getIn } from 'formik';
+import React from 'react';
 
 const FTextField = ({ label, field, form: { dirty, touched, errors }, ...other }: any) => {
   const errorText = getIn(errors, field.name);
@@ -10,17 +10,17 @@ const FTextField = ({ label, field, form: { dirty, touched, errors }, ...other }
   const hasError = dirty && touchedVal && errorText !== undefined;
 
   return (
-    <div>
-      <TextField
-        label={label}
-        error={hasError}
-        helperText={hasError ? errorText : ''}
-        {...field}
-        {...other}
-        margin="normal"
-        fullWidth
-      />
-    </div>
+    <TextField
+      label={label}
+      error={hasError}
+      // helperText={hasError ? errorText : ''}
+      {...field}
+      {...other}
+      margin="normal"
+      className="error"
+      fullWidth
+      {...other}
+    />
   );
 };
 

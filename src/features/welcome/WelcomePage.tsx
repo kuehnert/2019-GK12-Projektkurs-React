@@ -44,8 +44,9 @@ const useStyles = makeStyles(({ palette, spacing }: Theme) =>
       color: palette.secondary.contrastText,
       background: palette.secondary.main,
       height: '100vh',
-      textAlign: 'center',
+      paddingTop: spacing(16),
       padding: spacing(3),
+      textAlign: 'center',
     },
     box: {
       '& a': {

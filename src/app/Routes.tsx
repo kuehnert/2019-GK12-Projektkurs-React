@@ -6,6 +6,7 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import CoursePage from '../features/courses/CoursePage';
 import EditCoursePage from '../features/courses/EditCoursePage';
 import EnrolmentPage from '../features/enrolments/EnrolmentPage';
+import EditTeacherPage from '../features/teachers/EditTeacherPage';
 import LoginPage from '../features/teachers/LoginPage';
 import SignUpPage from '../features/teachers/SignUpPage';
 import AddTermPage from '../features/terms/AddTermPage';
@@ -25,6 +26,8 @@ export default () => {
         <Route path="/login" exact component={LoginPage} />
 
         <Layout>
+          <ProtectedRoute exact path="/edit" component={EditTeacherPage} />
+
           <ProtectedRoute exact path="/terms" component={TermsPage} />
           <ProtectedRoute exact path="/terms/new" component={AddTermPage} />
           <ProtectedRoute exact path="/terms/:termId" component={TermPage} />
