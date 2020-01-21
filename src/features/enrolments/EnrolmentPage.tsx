@@ -11,6 +11,7 @@ import { getStudents } from '../courses/studentSlice';
 import { getTerm } from '../terms/termSlice';
 import AbsenceTable from './AbsenceTable';
 import { getEnrolments } from './enrolmentSlice';
+import HomeworkIssuesTable from "./HomeworkIssuesTable";
 
 interface MatchParams {
   termId: string;
@@ -50,7 +51,7 @@ const EnrolmentPage: React.FC<RouteComponentProps<MatchParams>> = props => {
     }
   }, [dispatch, course, enrolment]);
 
-  if (enrolment == null) {
+  if (course == null || enrolment == null) {
     return <Loading />;
   }
 
@@ -59,10 +60,16 @@ const EnrolmentPage: React.FC<RouteComponentProps<MatchParams>> = props => {
   return (
     <div className={classes.root}>
       <Typography variant="h2">
+        {course.name}
+      </Typography>
+
+      <Typography variant="h3">
         {student.firstname} {student.lastname} ({student.formGroup})
       </Typography>
 
       <AbsenceTable enrolment={enrolment} />
+
+      <HomeworkIssuesTable enrolment={enrolment} />
     </div>
   );
 };
