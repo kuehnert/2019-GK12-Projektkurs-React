@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   Theme,
+  Button,
 } from '@material-ui/core';
 import { Person as PersonIcon } from '@material-ui/icons';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -63,7 +64,10 @@ const StudentEnrol: React.FC<Props> = props => {
     }
 
     setEnrolments(courseEnrolments);
-    let tmpStudents = selectedForm !== '' ? Object.values(termStudents).filter(ts => ts.formGroup === selectedForm) : Object.values(termStudents);
+    let tmpStudents =
+      selectedForm !== ''
+        ? Object.values(termStudents).filter(ts => ts.formGroup === selectedForm)
+        : Object.values(termStudents);
 
     setRemaining(tmpStudents.filter(ts => !courseEnrolments.find(e => e.studentId === ts.id)));
   }, [courseEnrolments, selectedForm, termStudents]);
@@ -72,9 +76,13 @@ const StudentEnrol: React.FC<Props> = props => {
     return <Loading />;
   }
 
+  const handleAddAll = (event: React.MouseEvent) => {
+    const ids = remaining.map(r => r.id);
+    dispatch(createEnrolments(term.id, course.id, ids));
+  };
+
   const onDragEnd = (result: any) => {
     const { source, destination } = result;
-    // console.log('source', source, 'destination', destination);
 
     // dropped outside the list
     if (!destination) {
@@ -95,29 +103,45 @@ const StudentEnrol: React.FC<Props> = props => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="root">
+    <div className="root">
+      <div className="formBar">
+        <FormControl margin="normal" className={classes.formControl}>
+          <InputLabel>Klasse</InputLabel>
+          <Select
+            name="formGroup"
+            fullWidth
+            margin="dense"
+            value={selectedForm}
+            onChange={(e: React.ChangeEvent<{ value: unknown }>) => setSelectedForm(e.target.value as string)}>
+            <MenuItem value={''}>{'<Alle Klassen>'}</MenuItem>
+            {formGroups.map((i: string) => (
+              <MenuItem value={i} key={i}>
+                {i}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl margin="normal" className={classes.formControl}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleAddAll}
+            disabled={selectedForm === '' || remaining.length === 0}>
+            Alle Schüler hinzufügen
+          </Button>
+        </FormControl>
+      </div>
+
+      <DragDropContext onDragEnd={onDragEnd}>
         <Grid container spacing={2} justify="space-around" alignItems="stretch" className={classes.grid}>
-          <Grid item className={classes.gridItem}>
+          <Grid item className={classes.gridItem} sm={6}>
             <Typography variant="h6">Schüler im Halbjahr</Typography>
-
-            <FormControl fullWidth margin="normal" className={classes.select}>
-              <InputLabel>Klasse</InputLabel>
-              <Select
-                name="formGroup"
-                fullWidth
-                margin="dense"
-                value={selectedForm}
-                onChange={(e: React.ChangeEvent<{ value: unknown }>) => setSelectedForm(e.target.value as string)}>
-                <MenuItem value={''}>{'<Alle Klassen>'}</MenuItem>
-                {formGroups.map((i: string) => (
-                  <MenuItem value={i} key={i}>
-                    {i}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
+          </Grid>
+          <Grid item className={classes.gridItem} sm={6}>
+            <Typography variant="h6">Schüler im Kurs</Typography>
+          </Grid>
+          <Grid item className={classes.gridItem} sm={6}>
             <Box className={classes.paper}>
               <Droppable droppableId="drop-students">
                 {(provided, snapshot) => (
@@ -143,8 +167,7 @@ const StudentEnrol: React.FC<Props> = props => {
             </Box>
           </Grid>
 
-          <Grid item className={classes.gridItem}>
-            <Typography variant="h6">Schüler im Kurs</Typography>
+          <Grid item className={classes.gridItem} sm={6}>
             <Box className={classes.paper}>
               <Droppable droppableId="drop-enrolments">
                 {(provided, snapshot) => (
@@ -181,21 +204,18 @@ const StudentEnrol: React.FC<Props> = props => {
             </Box>
           </Grid>
         </Grid>
-      </div>
-    </DragDropContext>
+      </DragDropContext>
+    </div>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {},
+    root: {
+      width: '100%',
+    },
     grid: {
       display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'nowrap',
-      justifyContent: 'space-between',
-      height: '60vh',
-      padding: '10px',
     },
     gridItem: {
       width: '30vw',
@@ -204,7 +224,12 @@ const useStyles = makeStyles((theme: Theme) =>
     paper: {
       height: '100%',
     },
-    select: {},
+    formBar: {
+    },
+    formControl: {
+      minWidth: 200,
+      paddingRight: theme.spacing(2),
+    },
     list: {
       height: '100%',
       background: '#fbfffb',
