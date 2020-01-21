@@ -1,4 +1,4 @@
-import { AppBar, Button, Theme, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, Theme, Toolbar, Typography, IconButton } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,6 +24,10 @@ export default () => {
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar variant="regular">
+        <IconButton className={classes.icon}>
+          <img src="/apple-touch-icon.png" alt="" width="40" />
+        </IconButton>
+
         <Typography variant="h6" className={classes.title}>
           Mr K.'s Sokrates
         </Typography>
@@ -46,6 +50,11 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     title: {
       flexGrow: 1,
+    },
+    icon: {
+      margin: 0,
+      marginRight: theme.spacing(2),
+      padding: 0,
     },
   })
 );
