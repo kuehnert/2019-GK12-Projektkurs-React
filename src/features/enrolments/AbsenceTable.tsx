@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { absenceExcused } from '../../utils/enrolmentHelpers';
 import { formatDate } from '../../utils/formatter';
-import { Enrolment, AbsenceTypes } from './enrolmentSlice';
+import { Enrolment, AbsenceType } from './enrolmentSlice';
 import AbsenceButton from './AbsenceButton';
 
 interface Props {
@@ -31,7 +31,7 @@ const AbsenceTable: React.FC<Props> = ({ enrolment }) => {
           {enrolment.absences.map((a, i) => (
             <TableRow key={a.date.valueOf()}>
               <TableCell align="center">{formatDate(a.date, 'withWeekday')}</TableCell>
-              <TableCell align="center">{a.type === AbsenceTypes.SCHULISCH ? `(${a.lessons})` : a.lessons}</TableCell>
+              <TableCell align="center">{a.type === AbsenceType.SCHULISCH ? `(${a.lessons})` : a.lessons}</TableCell>
               <TableCell align="center">{absenceExcused(a) ? 0 : a.lessons }</TableCell>
               <TableCell align="center">
                 <AbsenceButton enrolment={enrolment} index={i}/>
@@ -44,7 +44,7 @@ const AbsenceTable: React.FC<Props> = ({ enrolment }) => {
           <TableRow>
             <TableCell></TableCell>
             <TableCell align="center">{enrolment.absenceCount} insgesamt</TableCell>
-            <TableCell align="center">{enrolment.absenceOutstandingCount} unentschuldigt</TableCell>
+            <TableCell align="center">{enrolment.absenceOpenCount} unentschuldigt</TableCell>
             <TableCell></TableCell>
           </TableRow>
         </TableFooter>

@@ -4,13 +4,14 @@ import { isToday } from 'date-fns';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import history from '../../history';
-import { absentOnDate } from '../../utils/enrolmentHelpers';
+import { absentOnDate, homeworkIssueOnDate } from '../../utils/enrolmentHelpers';
 import { formatDate } from '../../utils/formatter';
 import { Student } from '../courses/studentSlice';
 import ColorButton from './ColorButton';
-import { AbsenceTypes, Enrolment, updateEnrolment } from './enrolmentSlice';
+import { HomeworkIssue, HomeworkIssueType, AbsenceType, Enrolment, updateEnrolment } from './enrolmentSlice';
 import StyledEnrolmentCell from './StyledEnrolmentCell';
 import StyledEnrolmentRow from './StyledEnrolmentRow';
+import _ from 'lodash';
 
 interface Props {
   enrolment: Enrolment;
@@ -23,7 +24,12 @@ interface Props {
 const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const lastAbsence = enrolment.absences.find(a => a.type === AbsenceTypes.UNENTSCHULDIGT);
+  const lastAbsence = _.findLast(enrolment.absences, a => a.type === AbsenceType.UNENTSCHULDIGT);
+
+  const lastHomeworkIssue = _.findLast(
+    enrolment.homeworkIssues,
+    hw => hw.type === HomeworkIssueType.NICHT_GEMACHT || hw.type === HomeworkIssueType.UNVOLLSTAENDIG
+  );
 
   const handleNewAbsence = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -31,8 +37,7 @@ const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) 
     const newAbsence = {
       date,
       lessons,
-      type: AbsenceTypes.UNENTSCHULDIGT,
-      done: false,
+      type: AbsenceType.UNENTSCHULDIGT,
     };
 
     // TODO: Möglicher Fehler mit Homework!
@@ -46,7 +51,31 @@ const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) 
     let newLastAbsence = newEnrolment.absences.find(a => a.date === lastAbsence?.date);
 
     if (newLastAbsence) {
-      newLastAbsence.type = AbsenceTypes.ENTSCHULDIGT;
+      newLastAbsence.type = AbsenceType.ENTSCHULDIGT;
+      dispatch(updateEnrolment(newEnrolment));
+    }
+  };
+
+  const handleNewHomeworkIssue = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    const newHomeworkIssue: HomeworkIssue = {
+      date,
+      type: HomeworkIssueType.NICHT_GEMACHT,
+      weight: 1,
+    };
+
+    let newEnrolment: Enrolment = JSON.parse(JSON.stringify(enrolment));
+    newEnrolment.homeworkIssues.push(newHomeworkIssue);
+    dispatch(updateEnrolment(newEnrolment));
+  };
+
+  const handleHomeworkUpdate = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    let newEnrolment: Enrolment = JSON.parse(JSON.stringify(enrolment));
+    let newLastHw = newEnrolment.homeworkIssues.find(a => a.date === lastHomeworkIssue?.date);
+
+    if (newLastHw) {
+      newLastHw.type = HomeworkIssueType.NACHGEMACHT;
       dispatch(updateEnrolment(newEnrolment));
     }
   };
@@ -68,8 +97,8 @@ const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) 
         </Typography>
       </StyledEnrolmentCell>
 
-      <StyledEnrolmentCell align="left" className={lastAbsence && classes.outstanding}>
-        {enrolment.absenceCount} / {enrolment.absenceOutstandingCount}
+      <StyledEnrolmentCell align="left" className={lastAbsence && classes.Open}>
+        {enrolment.absenceCount} / {enrolment.absenceOpenCount}
         {lessons > 0 && !absentOnDate(enrolment, date) && (
           <ColorButton variant="outlined" onClick={handleNewAbsence} hoverText="fehlt">
             {isToday(date) ? 'Heute' : formatDate(date)}
@@ -83,7 +112,17 @@ const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) 
       </StyledEnrolmentCell>
 
       <StyledEnrolmentCell align="left">
-        {enrolment.missingHomeworkCount} / {enrolment.missingHomeworkOutstandingCount}
+        {enrolment.homeworkIssueCount} / {enrolment.homeworkIssueOpenCount}
+        {lessons > 0 && !homeworkIssueOnDate(enrolment, date) && (
+          <ColorButton variant="outlined" onClick={handleNewHomeworkIssue} hoverText="nicht gemacht">
+            {isToday(date) ? 'Heute' : formatDate(date)}
+          </ColorButton>
+        )}
+        {lastHomeworkIssue && (
+          <ColorButton color="secondary" variant="contained" onClick={handleHomeworkUpdate} hoverText="nachgemacht">
+            {formatDate(lastHomeworkIssue.date)}
+          </ColorButton>
+        )}
       </StyledEnrolmentCell>
     </StyledEnrolmentRow>
   );
@@ -97,7 +136,7 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: theme.palette.grey[400],
       },
     },
-    outstanding: {
+    Open: {
       background: theme.palette.warning.light,
     },
   })

@@ -13,11 +13,11 @@ export interface Enrolment extends EnrolmentBase {
 
   absences: Absence[];
   absenceCount: number;
-  absenceOutstandingCount: number;
+  absenceOpenCount: number;
 
-  missingHomework: MissingHomework[];
-  missingHomeworkCount: number;
-  missingHomeworkOutstandingCount: number;
+  homeworkIssues: HomeworkIssue[];
+  homeworkIssueCount: number;
+  homeworkIssueOpenCount: number;
   finalGradePoints: number;
   student: Student;
 
@@ -32,12 +32,12 @@ export interface EnrolmentBase {
 
 export interface Absence {
   date: Date;
-  type: AbsenceTypes;
+  type: AbsenceType;
   lessons: number;
   minutes?: number;
 }
 
-export enum AbsenceTypes {
+export enum AbsenceType {
   UNENTSCHULDIGT = 'Unentschuldigt',
   ENTSCHULDIGT = 'Entschuldigt',
   BEURLAUBT = 'Beurlaubt',
@@ -45,11 +45,17 @@ export enum AbsenceTypes {
   ABGELAUFEN = 'Nicht mehr entschuldbar',
 }
 
-export interface MissingHomework {
+export interface HomeworkIssue {
   date: Date;
-  reason: string;
-  done: boolean;
   weight: number;
+  type: HomeworkIssueType;
+}
+
+export enum HomeworkIssueType {
+  NICHT_GEMACHT = 'Nicht gemacht',
+  UNVOLLSTAENDIG = 'Unvollständig',
+  NACHGEMACHT = 'Nachgemacht',
+  NICHT_NACHGEMACHT = 'Nicht nachgemacht',
 }
 
 export interface EnrolmentState {

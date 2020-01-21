@@ -12,7 +12,8 @@ const ColorButton: React.FC<Props & ButtonProps> = ({ children, hoverText, ...ot
 
   return (
     <Button className={classes.root} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)} {...other}>
-      {children} {hover && hoverText}
+      {/* {children} {hover && hoverText} */}
+      {hover ? hoverText : children}
     </Button>
   );
 };

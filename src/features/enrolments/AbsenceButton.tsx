@@ -1,7 +1,7 @@
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import React from 'react';
-import { AbsenceTypes, Enrolment, updateEnrolment } from './enrolmentSlice';
+import { AbsenceType, Enrolment, updateEnrolment } from './enrolmentSlice';
 import { useDispatch } from 'react-redux';
 
 export interface Props {
@@ -9,7 +9,7 @@ export interface Props {
   index: number;
 }
 
-const values = [...Object.values(AbsenceTypes), 'Löschen'];
+const values = [...Object.values(AbsenceType), 'Löschen'];
 
 export default function AbsenceButton({ enrolment, index }: Props) {
   const absence = enrolment.absences[index];
@@ -22,7 +22,7 @@ export default function AbsenceButton({ enrolment, index }: Props) {
       const a = newEnrolment.absences;
       newEnrolment.absences = a.slice(0, index).concat(a.slice(index + 1, a.length));
     } else {
-      const type = event.target.value as AbsenceTypes;
+      const type = event.target.value as AbsenceType;
       newEnrolment.absences[index].type = type;
     }
 
