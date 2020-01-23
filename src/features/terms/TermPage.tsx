@@ -66,6 +66,8 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'fixed',
       bottom: theme.spacing(3),
       right: theme.spacing(3),
+      color: theme.palette.primary.contrastText,
+      background: theme.palette.primary.main,
     },
   })
 );

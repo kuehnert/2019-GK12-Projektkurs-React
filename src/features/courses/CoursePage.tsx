@@ -1,4 +1,4 @@
-import { Button, Fab, TextField, Theme, Typography } from '@material-ui/core';
+import { Button, Fab, TextField, Theme, Typography, Divider } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { ArrowBack as ArrowBackIcon, ArrowForward as ArrowForwardIcon, Edit as EditIcon } from '@material-ui/icons';
 import { addDays } from 'date-fns';
@@ -13,9 +13,10 @@ import { useCourse, useTerm } from '../../utils/hooks';
 import { getEnrolments } from '../enrolments/enrolmentSlice';
 import EnrolmentTable from '../enrolments/EnrolmentTable';
 import { getTerm } from '../terms/termSlice';
-import { getCourses } from './courseSlice';
+import { getCourse, getCourses } from './courseSlice';
 import DatePicker from './DatePicker';
 import { getStudents } from './studentSlice';
+import LogEntryTable from './LogEntryTable';
 
 interface MatchParams {
   termId: string;
@@ -49,14 +50,18 @@ const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
     if (course == null) {
       dispatch(getCourses(termId));
     }
+
+    if (course != null && course.logCourse && course.logEntries.length === 0) {
+      dispatch(getCourse(termId, courseId));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (course != null) {
+    if (course != null && enrolments == null) {
       dispatch(getEnrolments(course));
     }
-  }, [course, dispatch]);
+  }, [dispatch, course, enrolments]);
 
   useEffect(() => {
     if (term == null || course == null) {
@@ -97,7 +102,17 @@ const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
           onChange={e => setLessons(Number(e.target.value))}
         />
       </div>
+      <Divider />
 
+      {course.logCourse && (
+        <>
+          <Typography variant="h4">Kursheft</Typography>
+          <LogEntryTable logEntries={course.logEntries.slice(-3)} />
+          <Divider />
+        </>
+      )}
+
+      <Typography variant="h4">Schülerinnen und Schüler</Typography>
       <EnrolmentTable enrolments={enrolments} students={students} date={date} lessons={lessons} />
     </div>
   );
@@ -105,6 +120,11 @@ const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    '@global': {
+      h4: {
+        paddingTop: theme.spacing(2),
+      },
+    },
     root: {},
     buttons: {
       textAlign: 'center',
@@ -114,7 +134,8 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'fixed',
       bottom: theme.spacing(3),
       right: theme.spacing(3),
-      background: 'white',
+      color: theme.palette.primary.contrastText,
+      background: theme.palette.primary.main,
     },
   })
 );

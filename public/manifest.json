@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Sokrates",
+  "name": "Mr K.'s Sokrates Schülerverwaltung",
   "icons": [
     {
       "src": "favicon.ico",

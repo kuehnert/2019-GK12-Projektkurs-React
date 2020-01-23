@@ -7,6 +7,20 @@ import { Enrolment } from '../enrolments/enrolmentSlice';
 
 export interface Course extends CourseBase {
   id: string;
+  enrolments: Enrolment[];
+  logEntries: LogEntry[];
+}
+
+export interface LogEntry {
+  id: string;
+  number: number;
+  date: Date;
+  plan: string;
+  homework: string;
+  notes: string;
+  lessons: number;
+  cancelled: boolean;
+  done: boolean;
 }
 
 export interface CourseBase {
@@ -17,7 +31,6 @@ export interface CourseBase {
   logCourse: boolean;
   logAbsences: boolean;
   logHomework: boolean;
-  enrolments: Enrolment[];
 }
 
 export const defaultCourse: Course = {
@@ -30,6 +43,7 @@ export const defaultCourse: Course = {
   logCourse: true,
   logHomework: true,
   enrolments: [],
+  logEntries: [],
 };
 
 export interface CourseState {
@@ -53,6 +67,23 @@ export const courseSlice = createSlice({
       state.courses[termId] = courses;
     },
     getCoursesFailed(state, action: PayloadAction<string>) {
+      state.courses = {};
+      state.error = action.payload;
+    },
+    getCourseSuccess(state, action: PayloadAction<{ termId: string; course: Course }>) {
+      const { termId, course } = action.payload;
+      const courses = state.courses[termId] || [];
+      const index = courses.findIndex(c => c.id === course.id);
+
+      if (index > -1) {
+        courses[index] = course;
+      } else {
+        courses.push(course);
+      }
+
+      state.courses[termId] = courses;
+    },
+    getCourseFailed(state, action: PayloadAction<string>) {
       state.courses = {};
       state.error = action.payload;
     },
@@ -89,6 +120,8 @@ export const courseSlice = createSlice({
 export const {
   createCourseSuccess,
   createCourseFailed,
+  getCourseFailed,
+  getCourseSuccess,
   getCoursesSuccess,
   getCoursesFailed,
   updateCourseFailed,
@@ -111,6 +144,20 @@ export const getCourses = (termId: string): AppThunk => async dispatch => {
   }
 
   dispatch(getCoursesSuccess({ termId, courses }));
+};
+
+export const getCourse = (termId: string, courseId: string): AppThunk => async dispatch => {
+  let course;
+  try {
+    const teacherId = getTeacherId();
+    const result = await sokratesApi.get(`/teachers/${teacherId}/terms/${termId}/courses/${courseId}`, { headers: authHeader() });
+    course = result.data;
+  } catch (error) {
+    dispatch(getCourseFailed(error.toString()));
+    return;
+  }
+
+  dispatch(getCourseSuccess({ termId, course }));
 };
 
 export const createCourse = (termId: string, values: CourseBase): AppThunk => async dispatch => {

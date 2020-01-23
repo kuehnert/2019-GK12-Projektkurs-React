@@ -116,9 +116,11 @@ const styles = (theme: Theme) =>
     },
     buttons: {},
     fab: {
-      position: 'absolute',
-      right: theme.spacing(2),
-      bottom: theme.spacing(2),
+      position: 'fixed',
+      bottom: theme.spacing(3),
+      right: theme.spacing(3),
+      color: theme.palette.primary.contrastText,
+      background: theme.palette.primary.main,
     },
   });
 
