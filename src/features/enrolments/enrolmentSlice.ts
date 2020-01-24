@@ -54,6 +54,7 @@ export interface HomeworkIssue {
 export enum HomeworkIssueType {
   NICHT_GEMACHT = 'Nicht gemacht',
   UNVOLLSTAENDIG = 'Unvollständig',
+  KRANKHEIT = 'Krankheit',
   NACHGEMACHT = 'Nachgemacht',
   NICHT_NACHGEMACHT = 'Nicht nachgemacht',
 }
