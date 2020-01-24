@@ -76,6 +76,9 @@ const useStyles = makeStyles((theme: Theme) =>
     drawer: {
       width: drawerWidth,
       flexShrink: 0,
+      '@media print': {
+        display: 'none',
+      },
     },
     drawerPaper: {
       width: drawerWidth,

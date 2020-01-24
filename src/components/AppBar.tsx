@@ -87,6 +87,9 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
+      '@media print': {
+        display: 'none',
+      },
     },
     menuButton: {
       marginRight: theme.spacing(2),

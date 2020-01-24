@@ -4,7 +4,7 @@ import { ArrowBack as ArrowBackIcon, ArrowForward as ArrowForwardIcon, Edit as E
 import { addDays } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Link } from 'react-router-dom';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import history from '../../history';
@@ -13,10 +13,11 @@ import { useCourse, useTerm } from '../../utils/hooks';
 import { getEnrolments } from '../enrolments/enrolmentSlice';
 import EnrolmentTable from '../enrolments/EnrolmentTable';
 import { getTerm } from '../terms/termSlice';
-import { getCourse, getCourses } from './courseSlice';
+import { getCourse, getCourses, LogEntry, defaultLogEntry } from './courseSlice';
 import DatePicker from './DatePicker';
 import { getStudents } from './studentSlice';
-import LogEntryTable from './LogEntryTable';
+import LogEntryTable from '../logentries/LogEntryTable';
+import LogEntryForm from '../logentries/LogEntryForm';
 
 interface MatchParams {
   termId: string;
@@ -30,6 +31,8 @@ const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
   const course = useCourse(termId, courseId);
   const [date, setDate] = useState<Date>(new Date());
   const [lessons, setLessons] = useState<number>(0);
+  // const [logEntryFormOpen, setLogEntryFormOpen] = useState(false);
+  const [currentLogEntry, setCurrentLogEntry] = useState<LogEntry | null>(null);
   const enrolments = useSelector((state: RootState) => state.enrolments.enrolments[courseId]);
   const students = useSelector((state: RootState) => state.students.students[termId]);
   const classes = useStyles();
@@ -106,8 +109,16 @@ const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
 
       {course.logCourse && (
         <>
-          <Typography variant="h4">Kursheft</Typography>
-          <LogEntryTable logEntries={course.logEntries.slice(-3)} />
+          <Typography variant="h4"><Link to={`/terms/${course.termId}/courses/${course.id}/log_entries`}>Kursheft</Link></Typography>
+
+          <LogEntryTable logEntries={course.logEntries.slice(-3).reverse()} handleClick={(le) => setCurrentLogEntry(le)} />
+
+          <LogEntryForm
+            course={course}
+            logEntry={currentLogEntry || defaultLogEntry}
+            open={currentLogEntry != null}
+            handleClose={() => setCurrentLogEntry(null)}
+          />
           <Divider />
         </>
       )}

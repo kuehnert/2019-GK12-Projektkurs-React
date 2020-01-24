@@ -23,6 +23,18 @@ export interface LogEntry {
   done: boolean;
 }
 
+export const defaultLogEntry = {
+  id: "dummy",
+  number: -1,
+  date: new Date(),
+  plan: "",
+  homework: "",
+  notes: "",
+  lessons: 0,
+  cancelled: false,
+  done: false,
+}
+
 export interface CourseBase {
   termId: string;
   name: string;

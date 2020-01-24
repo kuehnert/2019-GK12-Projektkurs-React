@@ -1,17 +1,17 @@
 import { Table, TableCell, TableHead, TableRow, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import Time from '../../components/Time';
 import history from '../../history';
+import { useInterval } from '../../utils/hooks';
+import { getCurrentPeriod, isCurrentPeriod, TimetableLesson } from '../../utils/termHelpers';
 import { getCourses } from '../courses/courseSlice';
 import { Lesson, Period } from '../terms/termSlice';
 import { Term } from './termSlice';
-import { TimetableLesson, getCurrentPeriod, isCurrentPeriod } from '../../utils/termHelpers';
-import { useInterval } from '../../utils/hooks';
-import classNames from 'classnames';
 
 type Props = { term: Term };
 
