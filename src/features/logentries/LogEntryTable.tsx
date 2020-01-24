@@ -62,7 +62,7 @@ const LogEntryTable: React.FC<Props> = ({ logEntries, handleClick }) => {
 
         <TableFooter>
           <TableRow>
-            <TableCell align="center" colSpan={2}>{logEntries[0].number} Sitzungen</TableCell>
+            <TableCell align="center" colSpan={2}>{logEntries[0]?.number || 0} Sitzungen</TableCell>
             <TableCell align="center">{totalCount} Stunden</TableCell>
             <TableCell colSpan={3}></TableCell>
           </TableRow>
