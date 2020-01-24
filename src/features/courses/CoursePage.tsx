@@ -13,7 +13,7 @@ import { useCourse, useTerm } from '../../utils/hooks';
 import { getEnrolments } from '../enrolments/enrolmentSlice';
 import EnrolmentTable from '../enrolments/EnrolmentTable';
 import { getTerm } from '../terms/termSlice';
-import { getCourse, getCourses, LogEntry, defaultLogEntry } from './courseSlice';
+import { getCourses, LogEntry, defaultLogEntry } from './courseSlice';
 import DatePicker from './DatePicker';
 import { getStudents } from './studentSlice';
 import LogEntryTable from '../logentries/LogEntryTable';
@@ -52,10 +52,6 @@ const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
 
     if (course == null) {
       dispatch(getCourses(termId));
-    }
-
-    if (course != null && course.logCourse && course.logEntries.length === 0) {
-      dispatch(getCourse(termId, courseId));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
