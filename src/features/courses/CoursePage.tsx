@@ -1,10 +1,10 @@
-import { Button, Fab, TextField, Theme, Typography, Divider } from '@material-ui/core';
+import { Button, Fab, TextField, Link, Theme, Typography, Divider } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { ArrowBack as ArrowBackIcon, ArrowForward as ArrowForwardIcon, Edit as EditIcon } from '@material-ui/icons';
 import { addDays } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RouteComponentProps, Link } from 'react-router-dom';
+import { RouteComponentProps, Link as RouterLink } from 'react-router-dom';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import history from '../../history';
@@ -109,7 +109,7 @@ const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
 
       {course.logCourse && (
         <>
-          <Typography variant="h4"><Link to={`/terms/${course.termId}/courses/${course.id}/log_entries`}>Kursheft</Link></Typography>
+          <Typography variant="h4"><Link to={`/terms/${course.termId}/courses/${course.id}/log_entries`} underline="none" component={RouterLink}>Kursheft</Link></Typography>
 
           <LogEntryTable logEntries={course.logEntries.slice(0, 3)} handleClick={(le) => setCurrentLogEntry(le)} />
 
@@ -124,7 +124,7 @@ const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
       )}
 
       <Typography variant="h4">Schülerinnen und Schüler</Typography>
-      <EnrolmentTable enrolments={enrolments} students={students} date={date} lessons={lessons} />
+      <EnrolmentTable course={course} enrolments={enrolments} students={students} date={date} lessons={lessons} />
     </div>
   );
 };

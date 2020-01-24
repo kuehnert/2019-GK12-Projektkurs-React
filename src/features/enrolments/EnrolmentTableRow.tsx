@@ -13,8 +13,10 @@ import StyledEnrolmentCell from './StyledEnrolmentCell';
 import StyledEnrolmentRow from './StyledEnrolmentRow';
 import _ from 'lodash';
 import { RootState } from '../../app/rootReducer';
+import { Course } from '../courses/courseSlice';
 
 interface Props {
+  course: Course;
   enrolment: Enrolment;
   student: Student;
   date: Date;
@@ -22,7 +24,7 @@ interface Props {
   index: number;
 }
 
-const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) => {
+const EnrolmentTableRow = ({ course, enrolment, student, index, date, lessons }: Props) => {
   const teacher = useSelector((state: RootState) => state.teachers.teacher);
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -97,33 +99,37 @@ const EnrolmentTableRow = ({ enrolment, student, index, date, lessons }: Props) 
         </Typography>
       </StyledEnrolmentCell>
 
-      <StyledEnrolmentCell align="left" className={lastAbsence && classes.Open}>
-        {enrolment.absenceCount} / {enrolment.absenceOpenCount}
-        {lessons > 0 && !absentOnDate(enrolment, date) && (
-          <ColorButton variant="outlined" onClick={handleNewAbsence} hoverText="fehlt">
-            {isToday(date) ? 'Heute' : formatDate(date)}
-          </ColorButton>
-        )}
-        {lastAbsence && (
-          <ColorButton color="secondary" variant="contained" onClick={handleApology} hoverText="entsch.">
-            {formatDate(lastAbsence.date)}
-          </ColorButton>
-        )}
-      </StyledEnrolmentCell>
+      {course.logAbsences && (
+        <StyledEnrolmentCell align="left" className={lastAbsence && classes.Open}>
+          {enrolment.absenceCount} / {enrolment.absenceOpenCount}
+          {lessons > 0 && !absentOnDate(enrolment, date) && (
+            <ColorButton variant="outlined" onClick={handleNewAbsence} hoverText="fehlt">
+              {isToday(date) ? 'Heute' : formatDate(date)}
+            </ColorButton>
+          )}
+          {lastAbsence && (
+            <ColorButton color="secondary" variant="contained" onClick={handleApology} hoverText="entsch.">
+              {formatDate(lastAbsence.date)}
+            </ColorButton>
+          )}
+        </StyledEnrolmentCell>
+      )}
 
-      <StyledEnrolmentCell align="left">
-        {enrolment.homeworkIssueCount} / {enrolment.homeworkIssueOpenCount}
-        {lessons > 0 && !homeworkIssueOnDate(enrolment, date) && (
-          <ColorButton variant="outlined" onClick={handleNewHomeworkIssue} hoverText="nicht gemacht">
-            {isToday(date) ? 'Heute' : formatDate(date)}
-          </ColorButton>
-        )}
-        {lastHomeworkIssue && (
-          <ColorButton color="secondary" variant="contained" onClick={handleHomeworkUpdate} hoverText="nachgemacht">
-            {formatDate(lastHomeworkIssue.date)}
-          </ColorButton>
-        )}
-      </StyledEnrolmentCell>
+      {course.logHomework && (
+        <StyledEnrolmentCell align="left">
+          {enrolment.homeworkIssueCount} / {enrolment.homeworkIssueOpenCount}
+          {lessons > 0 && !homeworkIssueOnDate(enrolment, date) && (
+            <ColorButton variant="outlined" onClick={handleNewHomeworkIssue} hoverText="nicht gemacht">
+              {isToday(date) ? 'Heute' : formatDate(date)}
+            </ColorButton>
+          )}
+          {lastHomeworkIssue && (
+            <ColorButton color="secondary" variant="contained" onClick={handleHomeworkUpdate} hoverText="nachgemacht">
+              {formatDate(lastHomeworkIssue.date)}
+            </ColorButton>
+          )}
+        </StyledEnrolmentCell>
+      )}
     </StyledEnrolmentRow>
   );
 };

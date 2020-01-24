@@ -5,15 +5,17 @@ import { Student } from '../courses/studentSlice';
 import { Enrolment } from './enrolmentSlice';
 import EnrolmentTableRow from './EnrolmentTableRow';
 import StyledEnrolmentCell from './StyledEnrolmentCell';
+import { Course } from '../courses/courseSlice';
 
 interface Props {
+  course: Course;
   enrolments: Enrolment[];
   students: { [id: string]: Student };
   date: Date;
   lessons: number;
 }
 
-export default ({ enrolments, students, date, lessons }: Props) => {
+export default ({ course, enrolments, students, date, lessons }: Props) => {
   const classes = useStyles();
 
   return (
@@ -23,14 +25,24 @@ export default ({ enrolments, students, date, lessons }: Props) => {
           <TableRow>
             <StyledEnrolmentCell align="center">Nr.</StyledEnrolmentCell>
             <StyledEnrolmentCell align="center">Name</StyledEnrolmentCell>
-            <StyledEnrolmentCell align="center">Fehlstunden (Unentschuldigt)</StyledEnrolmentCell>
-            <StyledEnrolmentCell align="center">Fehlende Hausaufgaben</StyledEnrolmentCell>
+            {course.logAbsences && (
+              <StyledEnrolmentCell align="center">Fehlstunden (Unentschuldigt)</StyledEnrolmentCell>
+            )}
+            {course.logHomework && <StyledEnrolmentCell align="center">Fehlende Hausaufgaben</StyledEnrolmentCell>}
           </TableRow>
         </TableHead>
 
         <TableBody>
           {enrolments.map((e, i) => (
-            <EnrolmentTableRow key={e.id} enrolment={e} student={students[e.studentId]} index={i + 1} date={date} lessons={lessons}/>
+            <EnrolmentTableRow
+              key={e.id}
+              course={course}
+              enrolment={e}
+              student={students[e.studentId]}
+              index={i + 1}
+              date={date}
+              lessons={lessons}
+            />
           ))}
         </TableBody>
       </Table>

@@ -53,6 +53,13 @@ const theme = createMuiTheme({
       fontSize: '2rem',
     },
   },
+  overrides: {
+    MuiLink: {
+      underlineAlways: {
+        textDecoration: 'none',
+      },
+    },
+  },
 });
 
 export default App;
