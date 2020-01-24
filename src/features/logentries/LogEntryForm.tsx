@@ -9,10 +9,11 @@ import {
 } from '@material-ui/core';
 import { Form, Formik, FormikValues } from 'formik';
 import { Checkbox, TextField } from 'formik-material-ui';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { formatDate } from '../../utils/formatter';
 import { Course, LogEntry, updateCourse } from '../courses/courseSlice';
+import AlertDialog from '../../components/AlertDialog';
 
 interface Props {
   open: boolean;
@@ -23,6 +24,7 @@ interface Props {
 
 const LogEntryForm: React.FC<Props> = ({ course, logEntry, handleClose, open }) => {
   const dispatch = useDispatch();
+  const [alertDialogOpen, setAlertDialogOpen] = useState(false);
 
   const handleSubmit = (values: FormikValues) => {
     const newEntry: LogEntry = { ...logEntry, ...values };
@@ -40,6 +42,8 @@ const LogEntryForm: React.FC<Props> = ({ course, logEntry, handleClose, open }) 
   };
 
   const handleDelete = () => {
+    setAlertDialogOpen(false);
+
     const newCourse: Course = JSON.parse(JSON.stringify(course));
     const index = newCourse.logEntries.findIndex(le => le.id === logEntry?.id);
 
@@ -48,7 +52,7 @@ const LogEntryForm: React.FC<Props> = ({ course, logEntry, handleClose, open }) 
       dispatch(updateCourse(course.termId, newCourse));
       handleClose();
     }
-  }
+  };
 
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
@@ -74,9 +78,17 @@ const LogEntryForm: React.FC<Props> = ({ course, logEntry, handleClose, open }) 
               <Button onClick={handleClose} color="default">
                 Abbrechen
               </Button>
-              <Button type="button" color="secondary" variant="contained" onClick={handleDelete}>
+
+              <Button type="button" color="secondary" variant="contained" onClick={() => setAlertDialogOpen(true)}>
                 Löschen
               </Button>
+              <AlertDialog
+                name={`den Kursbucheintrag vom ${formatDate(logEntry.date)}`}
+                open={alertDialogOpen}
+                handleCancel={() => setAlertDialogOpen(false)}
+                handleOK={handleDelete}
+              />
+
               <Button type="submit" color="primary" variant="contained">
                 Speichern
               </Button>
