@@ -24,9 +24,15 @@ const LogEntriesPage: React.FC<RouteComponentProps<MatchParams>> = props => {
   const classes = useStyles();
 
   useEffect(() => {
-    dispatch(getTerm(termId));
-    dispatch(getCourse(termId, courseId));
-  }, [dispatch, termId, courseId]);
+    if (term == null) {
+      dispatch(getTerm(termId));
+    }
+
+    if (course == null) {
+      dispatch(getCourse(termId, courseId));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (term == null || course == null) {
     return <Loading />;

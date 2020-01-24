@@ -1,13 +1,14 @@
-import { RouteComponentProps } from 'react-router-dom';
 import { Fab, Theme, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Edit as EditIcon } from '@material-ui/icons';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
 import { RootState } from '../../app/rootReducer';
 import Loading from '../../components/Loading';
 import history from '../../history';
 import { formatDate } from '../../utils/formatter';
+import { getCourses } from '../courses/courseSlice';
 import { getTerm, Term } from './termSlice';
 import Timetable from './Timetable';
 
@@ -25,6 +26,7 @@ const TermPage = (props: RouteComponentProps<MatchParams>) => {
 
   useEffect(() => {
     dispatch(getTerm(termId));
+    dispatch(getCourses(termId));
   }, [dispatch, termId]);
 
   if (term == null) {

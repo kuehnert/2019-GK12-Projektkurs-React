@@ -1,6 +1,6 @@
 import { Collapse, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { BookOutlined as BookIcon, ExpandLess, ExpandMore } from '@material-ui/icons';
+import { BookOutlined as BookIcon, ExpandLess, ExpandMore, Edit as EditIcon } from '@material-ui/icons';
 import React from 'react';
 import { Course } from '../features/courses/courseSlice';
 import history from '../history';
@@ -50,6 +50,15 @@ const CourseDrawer: React.FC<Props> = ({ course, currentId }) => {
               <ListItemText primary="Kursheft" />
             </ListItem>
           )}
+          <ListItem
+            button
+            onClick={() => history.push(`/terms/${course.termId}/courses/${course.id}/edit`)}
+            className={classes.nested}>
+            <ListItemIcon>
+              <EditIcon />
+            </ListItemIcon>
+            <ListItemText primary="Bearbeiten" />
+          </ListItem>
         </List>
       </Collapse>
     </>

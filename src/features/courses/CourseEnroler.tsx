@@ -43,8 +43,13 @@ const StudentEnrol: React.FC<Props> = props => {
 
   useEffect(() => {
     // console.log('Initial data load...');
-    dispatch(getEnrolments(course));
-    dispatch(getStudents(term.id));
+    if (course == null) {
+      dispatch(getEnrolments(course));
+    }
+
+    if (termStudents == null) {
+      dispatch(getStudents(term.id));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -224,8 +229,7 @@ const useStyles = makeStyles((theme: Theme) =>
     paper: {
       height: '100%',
     },
-    formBar: {
-    },
+    formBar: {},
     formControl: {
       minWidth: 200,
       paddingRight: theme.spacing(2),

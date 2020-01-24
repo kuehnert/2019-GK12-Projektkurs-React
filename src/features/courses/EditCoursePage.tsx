@@ -6,9 +6,9 @@ import { RouteComponentProps } from 'react-router-dom';
 import Loading from '../../components/Loading';
 import { useCourse, useTerm } from '../../utils/hooks';
 import { getTerm } from '../terms/termSlice';
-import { getCourses } from './courseSlice';
+import { getCourse } from './courseSlice';
 import StudentImport from './StudentImport';
-import CourseEnroler from "./CourseEnroler";
+import CourseEnroler from './CourseEnroler';
 
 interface MatchParams {
   termId: string;
@@ -53,9 +53,15 @@ export default (props: RouteComponentProps<MatchParams>) => {
   const [value, setValue] = React.useState(2);
 
   useEffect(() => {
-    dispatch(getTerm(termId));
-    dispatch(getCourses(termId));
-  }, [dispatch, termId, courseId]);
+    if (term == null) {
+      dispatch(getTerm(termId));
+    }
+
+    if (course == null) {
+      dispatch(getCourse(termId, courseId));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);

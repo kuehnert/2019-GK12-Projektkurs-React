@@ -114,8 +114,6 @@ export default (props: Props) => {
 
     setNewStudents(tempNew);
     setExistingStudentIds(tempExisting);
-    // console.log('newStudents', tempNew);
-    // console.log('existingStudentIds', tempExisting);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -127,7 +125,9 @@ export default (props: Props) => {
   useEffect(() => parseCsv(), [csvData, formGroup]);
 
   useEffect(() => {
-    dispatch(getStudents(term.id));
+    if (termStudents == null) {
+      dispatch(getStudents(term.id));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [term.id]);
 

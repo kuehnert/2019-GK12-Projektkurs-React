@@ -111,7 +111,7 @@ const CoursePage: React.FC<RouteComponentProps<MatchParams>> = props => {
         <>
           <Typography variant="h4"><Link to={`/terms/${course.termId}/courses/${course.id}/log_entries`}>Kursheft</Link></Typography>
 
-          <LogEntryTable logEntries={course.logEntries.slice(-3).reverse()} handleClick={(le) => setCurrentLogEntry(le)} />
+          <LogEntryTable logEntries={course.logEntries.slice(0, 3)} handleClick={(le) => setCurrentLogEntry(le)} />
 
           <LogEntryForm
             course={course}
