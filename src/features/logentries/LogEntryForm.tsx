@@ -70,8 +70,8 @@ const LogEntryForm: React.FC<Props> = ({ course, logEntry, handleClose, open }) 
               <TextField name="plan" label="Inhalt der Stunde" type="text" fullWidth multiline autoFocus />
               <TextField name="homework" label="Hausaufgaben" type="text" fullWidth multiline />
               <TextField name="notes" label="Notizen" type="text" fullWidth multiline />
-              <FormControlLabel label="Stunde ausgefallen" control={<Checkbox name="cancelled" />} />
               <FormControlLabel label="Eintrag abgeschlossen" control={<Checkbox name="done" />} />
+              <FormControlLabel label="Stunde ausgefallen" control={<Checkbox name="cancelled" />} />
             </DialogContent>
 
             <DialogActions>
