@@ -1,6 +1,6 @@
 {
   "name": "sokrates-frontend",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "private": true,
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",

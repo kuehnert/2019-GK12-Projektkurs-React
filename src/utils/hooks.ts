@@ -4,9 +4,14 @@ import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { RootState } from '../app/rootReducer';
 import { Course } from '../features/courses/courseSlice';
+import { Teacher } from '../features/teachers/teacherSlice';
 import { Term } from '../features/terms/termSlice';
 
 const pathPattern = /terms\/(\w+)(\/courses\/(\w+))?/;
+
+export const useTeacher = (): Teacher | null => {
+  return useSelector((state: RootState) => state.teachers.teacher);
+};
 
 // export const useCourse: Course | undefined = (courseId: string) => {
 export const useCourse = (termId: string, courseId: string): Course | undefined => {

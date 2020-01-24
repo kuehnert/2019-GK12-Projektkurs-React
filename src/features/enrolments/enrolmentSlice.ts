@@ -22,12 +22,13 @@ export interface Enrolment extends EnrolmentBase {
   student: Student;
 
   teacherId: string;
-  termId: string;
 }
 
 export interface EnrolmentBase {
-  studentId: string;
+  id?: string;
+  termId: string;
   courseId: string;
+  studentId: string;
 }
 
 export interface Absence {
@@ -109,6 +110,25 @@ export const enrolmentSlice = createSlice({
     updateEnrolmentFailed(state, action: PayloadAction<string>) {
       state.error = action.payload;
     },
+    updateEnrolmentsSuccess(state, action: PayloadAction<Enrolment[]>) {
+      const newEnrolments = action.payload;
+
+      if (newEnrolments.length === 0) {
+        return;
+      }
+
+      const enrolments = state.enrolments[newEnrolments[0].courseId];
+
+      newEnrolments.forEach(enrol => {
+        const index = enrolments.findIndex(e => e.id === enrol.id);
+        if (index > -1) {
+          enrolments[index] = enrol;
+        }
+      });
+    },
+    updateEnrolmentsFailed(state, action: PayloadAction<string>) {
+      state.error = action.payload;
+    },
   },
 });
 
@@ -121,6 +141,8 @@ export const {
   deleteEnrolmentFailed,
   updateEnrolmentFailed,
   updateEnrolmentSuccess,
+  updateEnrolmentsFailed,
+  updateEnrolmentsSuccess,
 } = enrolmentSlice.actions;
 
 export default enrolmentSlice.reducer;
@@ -171,7 +193,7 @@ export const createEnrolments = (termId: string, courseId: string, studentIds: s
   dispatch(createEnrolmentsSuccess({ courseId, newEnrolments }));
 };
 
-export const updateEnrolment = (enrolment: Enrolment): AppThunk => async dispatch => {
+export const updateEnrolment = (enrolment: EnrolmentBase): AppThunk => async dispatch => {
   const teacherId = getTeacherId();
   const { termId, courseId, id } = enrolment;
   let updatedEnrolment;
@@ -191,6 +213,34 @@ export const updateEnrolment = (enrolment: Enrolment): AppThunk => async dispatc
   }
 
   dispatch(updateEnrolmentSuccess(updatedEnrolment));
+};
+
+export const updateEnrolments = (enrolments: EnrolmentBase[]): AppThunk => async dispatch => {
+  const teacherId = getTeacherId();
+
+  if (enrolments.length === 0) {
+    dispatch(updateEnrolmentsFailed('Keine Schüler ausgewählt'));
+    return;
+  }
+
+  const { termId, courseId } = enrolments[0];
+  let updatedEnrolments;
+
+  try {
+    const result = await sokratesApi.patch(
+      `/teachers/${teacherId}/terms/${termId}/courses/${courseId}/enrolments`,
+      enrolments,
+      {
+        headers: authHeader(),
+      }
+    );
+    updatedEnrolments = result.data;
+  } catch (error) {
+    dispatch(updateEnrolmentsFailed(error.toString()));
+    return;
+  }
+
+  dispatch(updateEnrolmentsSuccess(updatedEnrolments));
 };
 
 export const deleteEnrolment = (enrolment: Enrolment): AppThunk => async (dispatch, getState) => {

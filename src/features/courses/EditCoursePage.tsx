@@ -9,6 +9,7 @@ import { getTerm } from '../terms/termSlice';
 import { getCourse } from './courseSlice';
 import StudentImport from './StudentImport';
 import CourseEnroler from './CourseEnroler';
+import EditEnrolmentsTab from '../enrolments/EditEnrolmentsTab';
 
 interface MatchParams {
   termId: string;
@@ -50,7 +51,7 @@ export default (props: RouteComponentProps<MatchParams>) => {
   const term = useTerm(termId);
   const course = useCourse(termId, courseId);
   const classes = useStyles();
-  const [value, setValue] = React.useState(2);
+  const [value, setValue] = React.useState(1);
 
   useEffect(() => {
     if (term == null) {
@@ -83,10 +84,10 @@ export default (props: RouteComponentProps<MatchParams>) => {
           // textColor="primary"
           centered
           aria-label="Kursdaten bearbeiten">
-          <Tab label="Notenkategorien" {...a11yProps(0)} />
+          <Tab label="Notenbildung" {...a11yProps(0)} />
           <Tab label="Schriftlichkeit" {...a11yProps(1)} />
-          <Tab label="Schülerinnen und Schüler" {...a11yProps(2)} />
-          <Tab label="Importieren" {...a11yProps(3)} />
+          <Tab label="Schüler zuordnen" {...a11yProps(2)} />
+          <Tab label="Schüler Importieren" {...a11yProps(3)} />
         </Tabs>
       </AppBar>
 
@@ -95,7 +96,7 @@ export default (props: RouteComponentProps<MatchParams>) => {
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        Item Two
+        <EditEnrolmentsTab course={course} />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
