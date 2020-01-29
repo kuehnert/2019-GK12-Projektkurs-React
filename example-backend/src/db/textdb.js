@@ -31,8 +31,12 @@ if (!fs.existsSync(dbPath)) {
 }
 
 const peopleData = fs.readFileSync(dbPath);
-const people = JSON.parse(peopleData);
-let nextID = Math.max.apply(Math, people.map(p => p.id)) + 1;
+let people = JSON.parse(peopleData);
+let nextID =
+  Math.max.apply(
+    Math,
+    people.map(p => p.id)
+  ) + 1;
 console.log('nextID', nextID);
 
 function saveDB() {
@@ -44,8 +48,15 @@ function getAll() {
 }
 
 function getById(id) {
-  const index = people.find(p => p.id === id);
-  return people[id];
+  console.log('id', id, typeof id);
+  const index = people.findIndex(p => p.id === id);
+  console.log('index', index);
+
+  if (index > -1) {
+    return people[index];
+  } else {
+    return null;
+  }
 }
 
 function create(data) {
@@ -55,4 +66,16 @@ function create(data) {
   saveDB();
 }
 
-module.exports = { getAll, getById, create };
+function remove(id) {
+  const target = getById(id);
+  if (target != null) {
+    // target ist weder null noch undefined
+    people = people.filter(p => p !== target);
+    saveDB();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+module.exports = { getAll, getById, create, remove };

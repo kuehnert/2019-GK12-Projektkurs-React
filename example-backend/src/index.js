@@ -18,7 +18,7 @@ app.get('/people', (request, response) => {
 });
 
 app.get('/people/:id', (request, response) => {
-  const data = db.getById(request.params.id);
+  const data = db.getById(Number(request.params.id));
   const jsonData = JSON.stringify(data);
   response.send(jsonData);
 });
@@ -28,5 +28,14 @@ app.post('/people', (request, response) => {
   db.create(data);
   response.send("Super");
 });
+
+app.delete('/people/:id', (request, response) => {
+  const deleted = db.remove(request.params.id);
+  if (deleted == true) {
+    response.sendStatus(204);
+  } else {
+    response.status(404).send('Figur nicht gefunden');
+  }
+})
 
 app.listen(5000, () => console.log('Server läuft auf Port 5000!'));
