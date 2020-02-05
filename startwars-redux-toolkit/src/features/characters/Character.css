@@ -1,0 +1,12 @@
+.character {
+  padding: 12px;
+  margin: 4px;
+  display: inline-block;
+  background: #aaf;
+  height: 100px;
+  width: 200px;
+}
+
+.tall {
+  background: #ffa;
+}

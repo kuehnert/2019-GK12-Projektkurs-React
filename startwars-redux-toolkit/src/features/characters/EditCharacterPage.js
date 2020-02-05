@@ -1,11 +1,11 @@
 import React from 'react';
 
-const EditTodoPage = () => {
+const EditCharacterPage = () => {
   return (
     <div>
-      <h1>Edit Todo Page</h1>
+      <h1>Edit Character Page</h1>
     </div>
   );
 };
 
-export default EditTodoPage;
+export default EditCharacterPage;

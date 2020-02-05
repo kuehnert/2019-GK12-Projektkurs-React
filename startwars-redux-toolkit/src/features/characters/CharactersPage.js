@@ -1,26 +1,33 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getTodos } from './todoSlice';
+import { getCharacters } from './characterSlice';
+import Character from './Character';
+import './CharacterPage.css';
 
-const TodosPage = () => {
-  const todos = useSelector(state => state.todos.list);
+const CharactersPage = () => {
+  const characters = useSelector(state => state.characters.list);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getTodos());
+    dispatch(getCharacters());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (todos == null) {
+  if (characters == null) {
     return <div>Loading...</div>;
   }
 
   return (
     <div>
-      <h1>Todos Page</h1>!
-      {JSON.stringify(todos)}!
+      <h1>Characters Page</h1>
+
+      <div className="container">
+        {characters.map((c, i) => (
+          <Character character={c} key={i} />
+        ))}
+      </div>
     </div>
   );
 };
 
-export default TodosPage;
+export default CharactersPage;

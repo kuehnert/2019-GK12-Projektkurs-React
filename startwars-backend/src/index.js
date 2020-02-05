@@ -15,11 +15,9 @@ app.get('/', (request, response) => {
 });
 
 app.get('/people', (request, response) => {
-  console.log('get people');
   const data = db.getAll();
   const jsonData = JSON.stringify(data);
   response.send(jsonData);
-  console.log('finished');
 });
 
 app.get('/people/:id', (request, response) => {
@@ -36,7 +34,8 @@ app.post('/people', (request, response) => {
 
 app.delete('/people/:id', (request, response) => {
   const deleted = db.remove(request.params.id);
-  if (deleted == true) {
+
+  if (deleted === true) {
     response.sendStatus(204);
   } else {
     response.status(404).send('Figur nicht gefunden');

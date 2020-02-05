@@ -1,11 +1,9 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import todosReducer from '../features/todos/todoSlice';
+import charactersReducer from '../features/characters/characterSlice';
 
 const rootReducer = combineReducers({
-  todos: todosReducer,
+  characters: charactersReducer,
 });
-
-export type RootState = ReturnType<typeof rootReducer>;
 
 export default rootReducer;

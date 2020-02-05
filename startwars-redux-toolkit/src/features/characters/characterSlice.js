@@ -3,36 +3,36 @@ import starwarsApi from '../../api/starwarsApi';
 
 const initialState = { list: null, isRequesting: false, error: null };
 
-const todoSlice = createSlice({
-  name: 'todos',
+const characterSlice = createSlice({
+  name: 'characters',
   initialState,
   reducers: {
-    getTodosSuccess(state, action) {
+    getCharactersSuccess(state, action) {
       console.log('action', action);
       state.list = action.payload;
       state.error = null;
     },
-    getTodosFailed(state, action) {
+    getCharactersFailed(state, action) {
       console.log('action', action);
       state.error = action.payload;
     },
   },
 });
 
-export const { getTodosSuccess, getTodosFailed } = todoSlice.actions;
+export const { getCharactersSuccess, getCharactersFailed } = characterSlice.actions;
 
-export default todoSlice.reducer;
+export default characterSlice.reducer;
 
-export const getTodos = () => async dispatch => {
-  console.log('getTodos');
+export const getCharacters = () => async dispatch => {
+  console.log('getCharacters');
   let list;
   try {
     const result = await starwarsApi.get(`/people`);
     list = result.data;
   } catch (error) {
-    dispatch(getTodosFailed(error.toString()));
+    dispatch(getCharactersFailed(error.toString()));
     return;
   }
 
-  dispatch(getTodosSuccess(list));
+  dispatch(getCharactersSuccess(list));
 };
