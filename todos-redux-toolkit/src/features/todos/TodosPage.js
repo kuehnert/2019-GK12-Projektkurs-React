@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getTodos } from './TodoSlice';
+import { getTodos } from './todoSlice';
 
 const TodosPage = () => {
   const todos = useSelector(state => state.todos.list);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('loading todos');
-    dispatch(getTodos);
+    dispatch(getTodos());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -18,7 +17,8 @@ const TodosPage = () => {
 
   return (
     <div>
-      <h1>Todos Page</h1>!{JSON.stringify(todos)}!
+      <h1>Todos Page</h1>!
+      {JSON.stringify(todos)}!
     </div>
   );
 };

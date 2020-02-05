@@ -13,6 +13,7 @@ const todoSlice = createSlice({
       state.error = null;
     },
     getTodosFailed(state, action) {
+      console.log('action', action);
       state.error = action.payload;
     },
   },

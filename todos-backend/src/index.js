@@ -1,20 +1,25 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('./db/textdb');
+const cors = require('cors');
 
+const port = 5000;
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 app.get('/', (request, response) => {
-  res.send('Hallo Welt!');
+  response.send('Hallo Welt!');
 });
 
 app.get('/people', (request, response) => {
+  console.log('get people');
   const data = db.getAll();
   const jsonData = JSON.stringify(data);
   response.send(jsonData);
+  console.log('finished');
 });
 
 app.get('/people/:id', (request, response) => {
@@ -38,4 +43,4 @@ app.delete('/people/:id', (request, response) => {
   }
 })
 
-app.listen(5000, () => console.log('Server läuft auf Port 5000!'));
+app.listen(port, () => console.log(`Server läuft auf Port ${port}!`));
